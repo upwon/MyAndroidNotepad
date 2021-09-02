@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/rl_item_container"
+    android:padding="10dp">
+
+
+    <TextView
+        android:id="@+id/grid_tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:gravity="left"
+        android:text="你好"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/grid_tv_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:ellipsize="end"
+        android:maxLines="4"
+        android:text="ces测试测试测试ces测试测试测试ces测试测试测试ces测试测试测试"
+        android:textSize="16dp" />
+
+
+
+    <TextView
+        android:id="@+id/grid_tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="2021-5-30 22:40:34"
+        android:textSize="14dp" />
+</LinearLayout>
