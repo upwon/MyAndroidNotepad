@@ -19,13 +19,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right|bottom"
-        android:clickable="true"
-        android:scaleType="centerInside"
         android:layout_margin="20dp"
-        app:srcCompat="@android:drawable/ic_input_add"
-
+        android:clickable="true"
         android:onClick="addNotes"
+        android:scaleType="centerInside"
+
+        android:src="@drawable/ic_baseline_add_26"
 
 
-       />
+        app:srcCompat="@android:drawable/ic_input_add" />
 </FrameLayout>
