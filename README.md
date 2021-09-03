@@ -6,31 +6,41 @@
 
 一款简单的Android笔记软件，实现笔记的添加、编辑、删除等操作，支持关键字实时搜索笔记；支持列表布局以及网格布局用以呈现笔记。
 
+<br/>
+
 
 
 ### 笔记界面
 
 ![](https://cdn.jsdelivr.net/gh/upwon/MyPicture@master/imgimage-20210903200003606.png)
 
+<br/>
 
+<br/>
 
 ### 笔记的增加
 
 ![](https://tva1.sinaimg.cn/large/003pPIslgy1gu3pj7vd5zg60c90p6b2a02.gif)
 
+<br/>
 
+<br/>
 
 ### 笔记的删除与修改
 
 ![](https://tva2.sinaimg.cn/large/003pPIslgy1gu3pmbz90qg60c80p64qq02.gif)
 
+<br/>
 
+<br/>
 
 ### 笔记的查询
 
 ![](https://tvax2.sinaimg.cn/large/003pPIslgy1gu3pp4h9xug60c80p61kx02.gif)
 
+<br/>
 
+<br/>
 
 ## 布局
 
