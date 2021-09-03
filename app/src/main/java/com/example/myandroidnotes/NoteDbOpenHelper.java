@@ -100,7 +100,7 @@ public class NoteDbOpenHelper { //   extends LitePalSupport{
 
     public List<Notes> queryAllNotes()
     {
-        List<Notes> allNotes=LitePal.findAll(Notes.class);
+        List<Notes> allNotes=LitePal.order("time desc").find(Notes.class);
 
         return  allNotes;
 
@@ -108,7 +108,7 @@ public class NoteDbOpenHelper { //   extends LitePalSupport{
 
     public List<Notes> queryByTitle(String title)
     {
-        List<Notes> resultNotes=LitePal.where("title like ?","%"+title+"%").order("time").find(Notes.class);
+        List<Notes> resultNotes=LitePal.where("title like ?","%"+title+"%").order("time desc").find(Notes.class);
 
         return resultNotes;
 

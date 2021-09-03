@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private void refreshDataFromDb() {
         mNoteDbOpenHelper = new NoteDbOpenHelper(this);
         mNotes = mNoteDbOpenHelper.queryAllNotes();
-        Collections.reverse(mNotes);
+      //  Collections.reverse(mNotes);
         mAdapter.refreshDate(mNotes);
     }
 
