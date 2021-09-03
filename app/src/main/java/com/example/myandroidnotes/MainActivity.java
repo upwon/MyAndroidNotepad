@@ -20,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private void refreshDataFromDb() {
         mNoteDbOpenHelper = new NoteDbOpenHelper(this);
         mNotes = mNoteDbOpenHelper.queryAllNotes();
+        Collections.reverse(mNotes);
         mAdapter.refreshDate(mNotes);
     }
 
