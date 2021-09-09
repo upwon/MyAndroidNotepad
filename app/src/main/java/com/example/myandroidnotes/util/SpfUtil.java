@@ -3,7 +3,7 @@ package com.example.myandroidnotes.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class spfUtil {
+public class SpfUtil {
     private static String SPF_NAME = "noteSpf";
 
     public static void saveString(Context context, String key, String value) {

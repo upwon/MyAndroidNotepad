@@ -15,7 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.myandroidnotes.adapter.MyAdapter;
-import com.example.myandroidnotes.util.spfUtil;
+import com.example.myandroidnotes.util.SpfUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 设置布局
     private void setListLayout() {
-        currentListLayoutMode = spfUtil.getIntWithDefault(this, KEY_LAYOUT_MODE, MODE_LINEAR);
+        currentListLayoutMode = SpfUtil.getIntWithDefault(this, KEY_LAYOUT_MODE, MODE_LINEAR);
         Log.d(TAG, "setListLayout: " + currentListLayoutMode);
         if (currentListLayoutMode == MODE_LINEAR) {
             setToLinearList();
@@ -183,12 +183,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.menu_linear:  // 列表视图
                 setToLinearList();
                 currentListLayoutMode = MODE_LINEAR;  // 设为列表布局 之后会持久化保存布局模式
-                spfUtil.saveInt(this, KEY_LAYOUT_MODE, currentListLayoutMode);    // 持久化到SharedPreferences
+                SpfUtil.saveInt(this, KEY_LAYOUT_MODE, currentListLayoutMode);    // 持久化到SharedPreferences
                 return true;
             case R.id.menu_grid:    // 网格视图
                 setToGridList();
                 currentListLayoutMode = MODE_GRID;  // 设为列表布局 之后会持久化保存布局模式
-                spfUtil.saveInt(this, KEY_LAYOUT_MODE, currentListLayoutMode);    // 持久化到SharedPreferences
+                SpfUtil.saveInt(this, KEY_LAYOUT_MODE, currentListLayoutMode);    // 持久化到SharedPreferences
                 return true;
 
             default:

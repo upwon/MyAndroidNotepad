@@ -15,7 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myandroidnotes.EditActivity;
-import com.example.myandroidnotes.NoteDbOpenHelper;
+import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.Notes;
 import com.example.myandroidnotes.R;
 

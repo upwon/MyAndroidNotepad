@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.util.MyTimeUtil;
 import com.example.myandroidnotes.util.ToastUtil;
 
@@ -14,7 +15,7 @@ public class AddActivity extends AppCompatActivity {
 
     private EditText etTitle,etContent;
 
-    private  NoteDbOpenHelper mNoteDbOpenHelper;
+    private NoteDbOpenHelper mNoteDbOpenHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

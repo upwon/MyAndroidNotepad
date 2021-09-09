@@ -1,7 +1,9 @@
-package com.example.myandroidnotes;
+package com.example.myandroidnotes.DB;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.example.myandroidnotes.Notes;
 
 import org.litepal.LitePal;
 import org.litepal.crud.LitePalSupport;
@@ -9,6 +11,7 @@ import org.litepal.crud.LitePalSupport;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
 
 public class NoteDbOpenHelper { //   extends LitePalSupport{
 
