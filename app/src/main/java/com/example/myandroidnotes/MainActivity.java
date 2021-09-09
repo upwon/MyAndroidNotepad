@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.adapter.MyAdapter;
 import com.example.myandroidnotes.util.SpfUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
