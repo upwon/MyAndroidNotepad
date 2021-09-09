@@ -77,7 +77,12 @@
     </androidx.core.widget.NestedScrollView>
 
 
-
+    <Button
+        style="@style/MyBtnStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="add"
+        android:text="添加" />
 
 
 
