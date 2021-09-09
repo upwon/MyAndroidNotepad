@@ -63,7 +63,7 @@ public class AddActivity extends AppCompatActivity {
             public void onMaterialsItemClick(MaterialsMenuBean bean) {
                 switch (bean.getId()){
                     case MATERIALS_IMAGE: //从素材图片库选择 最大3个
-                        mEditor.insertImage("", ""); //插入图片到编辑器
+                        mEditor.insertImage("https://tvax3.sinaimg.cn/large/003pPIslgy1gu9kz1s96xj60y70j5aio02.jpg", ""); //插入图片到编辑器
                         break;
                     case MATERIALS_VIDEO: //从素材视频库选择 最大3个
                         mEditor.insertVideoFrame("视频封面地址",
@@ -90,7 +90,8 @@ public class AddActivity extends AppCompatActivity {
 
     public void add(View view) {
             String title=etTitle.getText().toString();
-            String content=etContent.getText().toString();
+            //String content=etContent.getText().toString();
+            String content=mEditor.getHtml();
 
             if(TextUtils.isEmpty(title)){
                 ToastUtil.toastShort(this,"标题不能为空");
