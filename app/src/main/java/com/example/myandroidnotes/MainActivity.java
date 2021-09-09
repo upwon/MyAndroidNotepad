@@ -18,6 +18,8 @@ import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.adapter.MyAdapter;
 import com.example.myandroidnotes.util.SpfUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.yyp.editor.RichEditor;
+import com.yyp.editor.widget.EditorOpMenuView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private FloatingActionButton mButtonAdd;
+
     private List<Notes> mNotes;
     private MyAdapter mAdapter;
     private NoteDbOpenHelper mNoteDbOpenHelper;
@@ -79,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private void initView() {
 
         mRecyclerView = findViewById(R.id.recycler_view);
+
     }
 
     private void initData() {
