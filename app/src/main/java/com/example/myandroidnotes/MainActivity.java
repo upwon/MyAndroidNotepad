@@ -162,20 +162,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * @method  getCurrentTime
-     * @description 获取当前时间信息
-     * @date: 2021/9/10 20:07
-     * @author: wangxianwen
-     * @param
-     * @return
-     */
-    private String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");
-        Date date = new Date();
-        return sdf.format(date);
 
-    }
 
 
     /**

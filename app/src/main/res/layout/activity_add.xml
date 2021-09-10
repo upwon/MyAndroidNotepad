@@ -65,7 +65,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/editor_op_menu_view"
-            android:background="@color/picker_blue_grey"
 
 
            />
@@ -79,7 +78,7 @@
         android:layout_height="wrap_content"/>
 
     <Button
-        style="@style/MyBtnStyle"
+    android:background="@drawable/btn_selector"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="add"

@@ -71,11 +71,12 @@
         android:layout_height="wrap_content" />
 
     <Button
-        style="@style/MyBtnStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="saveEditedNote"
-        android:text="保存" />
+        android:text="保存"
+        android:background="@drawable/btn_selector"
+        />
 
 
 </LinearLayout>
