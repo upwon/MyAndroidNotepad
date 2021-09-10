@@ -1,5 +1,7 @@
 package com.example.myandroidnotes.adapter;
 
+import static com.example.myandroidnotes.util.TextParse.getPlainTextFromHTML;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +20,7 @@ import com.example.myandroidnotes.EditActivity;
 import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.Notes;
 import com.example.myandroidnotes.R;
+import com.example.myandroidnotes.util.TextParse;
 
 
 import java.util.List;
@@ -88,6 +91,10 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void bindMyViewHolder(MyViewHolder holder, int position) {
         Notes note = mList.get(position);
+
+        note.setContents( TextParse.Html2Text(note.getContents()));
+
+
         holder.mTvTitle.setText(note.getTitle());
         holder.mTvContent.setText(note.getContents());
         holder.mTvTime.setText(note.getTime());
@@ -246,24 +253,21 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return mList.size();
     }
 
-    // 删除数据库中对应id的条目
-    // 删除后
+
+    /**
+     * @method  删除数据库中对应id的条目
+     * @description 描述一下方法的作用
+     * @date: 2021/9/10 19:51
+     * @author: wangxianwen
+     * @param
+     * @return
+     */
     private void removeData(int position) {
         this.mList.remove(position);
-
-//        if(mNoteDbOpenHelper==null)
-//        {
-//            mNoteDbOpenHelper=new NoteDbOpenHelper(this.mContext);
-//
-//        }
-//
-//        int result=mNoteDbOpenHelper.deleteFromDbById(position);
-
-
         notifyItemRemoved(position);
 
-
     }
+
 
     public void refreshDate(List<Notes> notes) {
         this.mList = notes;

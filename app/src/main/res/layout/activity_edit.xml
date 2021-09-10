@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -28,9 +28,9 @@
             <EditText
                 android:id="@+id/et_title"
                 style="@style/MyEditStyle"
-                android:maxLines="1"
                 android:layout_width="match_parent"
-                android:layout_marginLeft="5dp" />
+                android:layout_marginLeft="5dp"
+                android:maxLines="1" />
         </LinearLayout>
 
         <TextView
@@ -39,21 +39,44 @@
             android:layout_height="wrap_content"
             android:text="内容" />
 
-        <EditText
-            android:id="@+id/et_content"
-            style="@style/MyEditStyle"
-            android:layout_width="match_parent"
-            android:gravity="left"
-            android:layout_height="300dp"
-            android:layout_marginTop="5dp" />
 
-        <Button
-            style="@style/MyBtnStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="saveEditedNote"
-            android:text="保存" />
     </LinearLayout>
 
 
-</ScrollView>
+    <com.yyp.editor.widget.EditorOpMenuView
+        android:id="@+id/editor_op_menu_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+        >
+
+        <com.yyp.editor.RichEditor
+            android:id="@+id/et_content"
+            style="@style/MyEditStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/editor_op_menu_view"
+            android:background="@color/picker_blue_grey"
+
+
+            />
+
+
+    </androidx.core.widget.NestedScrollView>
+
+
+    <Button
+        style="@style/MyBtnStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="saveEditedNote"
+        android:text="保存" />
+
+
+</LinearLayout>
