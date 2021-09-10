@@ -35,6 +35,14 @@ public class TextParse {
         return outputText;
     }
 
+    /**
+     * @method  parsePlainTextFromHTML
+     * @description 从HTML解析文本  使用Jsoup库
+     * @date: 2021/9/10 22:31
+     * @author: wangxianwen
+     * @param
+     * @return
+     */
     public static String  parsePlainTextFromHTML(String inputHTML) {
         Document d = Jsoup.parse(inputHTML);
         String text = d.text();
