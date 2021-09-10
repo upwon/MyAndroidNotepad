@@ -69,7 +69,7 @@ public class EditActivity extends AppCompatActivity {
             public void onMaterialsItemClick(MaterialsMenuBean bean) {
                 switch (bean.getId()) {
                     case MATERIALS_IMAGE: //从素材图片库选择 最大3个
-                        mEditor.insertImage("", ""); //插入图片到编辑器
+                        mEditor.insertImage("https://tvax3.sinaimg.cn/large/003pPIslgy1gu9kz1s96xj60y70j5aio02.jpg", ""); //插入图片到编辑器
                         break;
                     case MATERIALS_VIDEO: //从素材视频库选择 最大3个
                         mEditor.insertVideoFrame("视频封面地址",
@@ -79,7 +79,7 @@ public class EditActivity extends AppCompatActivity {
                         mEditor.insertHtml("新增文本内容"); //插入文本到编辑器
                         break;
                     case LOCAL_IMAGE:   // 本地選取圖片
-                        mEditor.insertImage("https://img-blog.csdnimg.cn/img_convert/f4984b5a643e24919408cb045248fafc.gif", "");
+                        mEditor.insertImage("https://tvax2.sinaimg.cn/large/ba920825gy1grdb8wqvaaj21s80to13l.jpg", "");
                         break;
 
                 }

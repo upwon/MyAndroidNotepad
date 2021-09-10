@@ -43,12 +43,6 @@
     </LinearLayout>
 
 
-    <com.yyp.editor.widget.EditorOpMenuView
-        android:id="@+id/editor_op_menu_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -70,6 +64,11 @@
 
     </androidx.core.widget.NestedScrollView>
 
+
+    <com.yyp.editor.widget.EditorOpMenuView
+        android:id="@+id/editor_op_menu_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <Button
         style="@style/MyBtnStyle"

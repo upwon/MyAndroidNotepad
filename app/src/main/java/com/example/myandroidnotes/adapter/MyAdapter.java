@@ -91,12 +91,10 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void bindMyViewHolder(MyViewHolder holder, int position) {
         Notes note = mList.get(position);
-
-        note.setContents( TextParse.Html2Text(note.getContents()));
-
+        String parsedNoteContent = TextParse.Html2Text(note.getContents());
 
         holder.mTvTitle.setText(note.getTitle());
-        holder.mTvContent.setText(note.getContents());
+        holder.mTvContent.setText(parsedNoteContent);
         holder.mTvTime.setText(note.getTime());
 
         // 点击跳转到编辑界面
@@ -186,7 +184,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             }
         });
-        
+
     }
 
 
@@ -255,12 +253,12 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     /**
-     * @method  删除数据库中对应id的条目
-     * @description 描述一下方法的作用
-     * @date: 2021/9/10 19:51
-     * @author: wangxianwen
      * @param
      * @return
+     * @method removeData
+     * @description 删除数据库中对应id的条目
+     * @date: 2021/9/10 19:51
+     * @author: wangxianwen
      */
     private void removeData(int position) {
         this.mList.remove(position);
@@ -269,6 +267,14 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
 
+    /**
+     * @param
+     * @return
+     * @method refreshDate
+     * @description 刷新数据
+     * @date: 2021/9/10 20:33
+     * @author: wangxianwen
+     */
     public void refreshDate(List<Notes> notes) {
         this.mList = notes;
         notifyDataSetChanged();
