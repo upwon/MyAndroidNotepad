@@ -1,6 +1,9 @@
 package com.example.myandroidnotes.util;
 
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +33,12 @@ public class TextParse {
         String outputText=m.replaceAll("");
 
         return outputText;
+    }
+
+    public static String  parsePlainTextFromHTML(String inputHTML) {
+        Document d = Jsoup.parse(inputHTML);
+        String text = d.text();
+        return text;
     }
 
     /**

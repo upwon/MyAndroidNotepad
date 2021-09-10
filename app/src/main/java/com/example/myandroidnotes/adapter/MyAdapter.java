@@ -91,7 +91,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void bindMyViewHolder(MyViewHolder holder, int position) {
         Notes note = mList.get(position);
-        String parsedNoteContent = TextParse.Html2Text(note.getContents());
+        String parsedNoteContent = TextParse.parsePlainTextFromHTML(note.getContents());
 
         holder.mTvTitle.setText(note.getTitle());
         holder.mTvContent.setText(parsedNoteContent);
