@@ -10,6 +10,10 @@
 
 
 
+
+
+
+
 ### 笔记界面
 
 ![](https://cdn.jsdelivr.net/gh/upwon/MyPicture@master/imgimage-20210903200003606.png)
@@ -21,6 +25,10 @@
 ### 笔记的增加
 
 ![](https://tva1.sinaimg.cn/large/003pPIslgy1gu3pj7vd5zg60c90p6b2a02.gif)
+
+
+
+![image](https://tvax1.sinaimg.cn/large/003pPIslgy1gubsquhc92j60dk0sg42j02.jpg)
 
 <br/>
 
