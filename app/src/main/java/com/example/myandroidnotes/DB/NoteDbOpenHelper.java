@@ -12,12 +12,30 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-
-public class NoteDbOpenHelper { //   extends LitePalSupport{
+/**
+ * @ProjectName:
+ * @Package: com.example.myandroidnotes.DB
+ * @ClassName: NoteDbOpenHelper
+ * @Description: 负责 SQLite 数据库操作
+ * @Author: wangxianwen
+ * @CreateDate: 2021/9/10 21:34
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2021/9/10 21:34
+ * @UpdateRemark: 更新内容
+ * @Version: 1.0
+ */
+public class NoteDbOpenHelper { 
 
     private Notes mNote;
 
-
+    /**
+     * @method  NoteDbOpenHelper
+     * @description 数据库初始化
+     * @date: 2021/9/10 21:43
+     * @author: wangxianwen
+     * @param
+     * @return
+     */
     public NoteDbOpenHelper(Context mContext) {
         LitePal.initialize(mContext);
     }
@@ -26,7 +44,7 @@ public class NoteDbOpenHelper { //   extends LitePalSupport{
         LitePal.initialize(mContext);
     }
 
-    public void CreateDataBase() {
+    public void createDataBase() {
         //创建数据库
         SQLiteDatabase db = LitePal.getDatabase();
     }
@@ -35,9 +53,15 @@ public class NoteDbOpenHelper { //   extends LitePalSupport{
 
     }
 
-    public  boolean insertData(Notes note) {
-//        mNote = note;
-//        return mNote.save();
+    /**
+     * @method  insertData
+     * @description 新增一条笔记到数据库
+     * @date: 2021/9/10 22:00
+     * @author: wangxianwen
+     * @param note
+     * @return 插入数据成功返回ture
+     */
+    public boolean insertData(Notes note) {
 
         return note.save();
     }
@@ -101,17 +125,15 @@ public class NoteDbOpenHelper { //   extends LitePalSupport{
 
     }
 
-    public List<Notes> queryAllNotes()
-    {
-        List<Notes> allNotes=LitePal.order("time desc").find(Notes.class);
+    public List<Notes> queryAllNotes() {
+        List<Notes> allNotes = LitePal.order("time desc").find(Notes.class);
 
-        return  allNotes;
+        return allNotes;
 
     }
 
-    public List<Notes> queryByTitle(String title)
-    {
-        List<Notes> resultNotes=LitePal.where("title like ?","%"+title+"%").order("time desc").find(Notes.class);
+    public List<Notes> queryByTitle(String title) {
+        List<Notes> resultNotes = LitePal.where("title like ?", "%" + title + "%").order("time desc").find(Notes.class);
 
         return resultNotes;
 
