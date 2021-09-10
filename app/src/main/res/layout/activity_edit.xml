@@ -75,6 +75,7 @@
         android:layout_height="wrap_content"
         android:onClick="saveEditedNote"
         android:text="保存"
+        android:textSize="24dp"
         android:background="@drawable/btn_selector"
         />
 
