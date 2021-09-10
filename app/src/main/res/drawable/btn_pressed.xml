@@ -6,5 +6,5 @@
     <corners android:radius="10dp"/>
 
     <!-- 填充颜色 -->
-    <solid android:color="#1B53AC"/>
+    <solid android:color="#2160C5"/>
 </shape>
