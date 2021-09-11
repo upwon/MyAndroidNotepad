@@ -61,7 +61,7 @@ public class TextParse {
      * @date: 2021/9/10 20:02
      * @author: wangxianwen
      */
-    public static String Html2Text(String inputString) {
+    public static String html2Text(String inputString) {
         String htmlStr = inputString;
         String textStr = "";
         java.util.regex.Pattern p_script;

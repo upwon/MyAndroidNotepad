@@ -33,7 +33,8 @@ import com.yyp.editor.widget.EditorOpMenuView;
 public class AddActivity extends AppCompatActivity {
 
     private static final String TAG = "AddActivity";
-    private EditText etTitle, etContent;
+    private EditText etTitle;
+    private EditText etContent;
     private RichEditor mEditor;
     private EditorOpMenuView mEditorOpMenuView;
     private NoteDbOpenHelper mNoteDbOpenHelper;
