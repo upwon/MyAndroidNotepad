@@ -1,17 +1,26 @@
 package com.example.myandroidnotes;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.util.MyTimeUtil;
 import com.example.myandroidnotes.util.PictureUtil;
+import com.example.myandroidnotes.util.RealPathFromUriUtils;
 import com.example.myandroidnotes.util.ToastUtil;
 import com.yyp.editor.RichEditor;
 import com.yyp.editor.bean.MaterialsMenuBean;
@@ -23,6 +32,8 @@ import com.yyp.editor.widget.EditorOpMenuView;
 public class EditActivity extends AppCompatActivity {
 
     private static final String TAG = "EditActivity";
+    // 从相册选择照片的类库
+    public static final int RC_CHOOSE_PHOTO = 1;
     private Notes note;
     private EditText etTitle;
     private EditText etContent;
@@ -92,9 +103,9 @@ public class EditActivity extends AppCompatActivity {
                     // TODO: 待完成插入本地图片
                     case LOCAL_IMAGE:
                         Log.d(TAG, "onMaterialsItemClick: 插入本地图片");
-                        pictureUtil.getPictureFromCamera(EditActivity.this);
+                      //   pictureUtil.getPictureFromCamera(EditActivity.this);
 
-                        // getPictureFromCamera();
+                        getPictureFromCamera(EditActivity.this);
                         break;
                     default:
                         Log.d(TAG, "onMaterialsItemClick: switch case 异常");
@@ -109,6 +120,71 @@ public class EditActivity extends AppCompatActivity {
         iniData();
 
     }
+
+    private void getPictureFromCamera(Activity activity) {
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "onClick: DON't HAVE permission to access the sd image.");
+            PictureUtil.verifyStoragePermissions(activity, 1);
+        } else {
+            // Log.d(TAG, "onClick: Have permission to access the SD image.");
+            loadSDImage();
+        }
+
+    }
+
+    private void loadSDImage() {
+
+        Intent intentToPickPic = new Intent(Intent.ACTION_PICK, null);
+        intentToPickPic.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        startActivityForResult(intentToPickPic, RC_CHOOSE_PHOTO);
+
+    }
+
+    // 使用Glide加载手机相册中的图片
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case RC_CHOOSE_PHOTO:
+                if (data != null) {
+                    String realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this, data.getData());
+                    mEditor.insertImage("file://" + realPathFromUri, "");
+                    Log.d(TAG, "onActivityResult: image url=" + realPathFromUri);
+                } else {
+                    Toast.makeText(this, "图片损坏，请重新选择", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+
+            default:
+
+                Log.d(TAG, "onActivityResult: default");
+
+                break;
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //Log.d(TAG, "onRequestPermissionsResult: User Granted the SD Permission");
+                    loadSDImage();
+                } else {
+                    //Log.d(TAG, "onRequestPermissionsResult: User denied the SD Permission");
+                    Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+        }
+
+    }
+
 
     // 获取传递过来的数据
     private void iniData() {

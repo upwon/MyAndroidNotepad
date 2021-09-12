@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -27,14 +28,16 @@ import com.example.myandroidnotes.AddActivity;
 
 public class PictureUtil extends AppCompatActivity {
     private static final String TAG = "PictureUtil";
-    private static final int RC_CHOOSE_PHOTO = 1 ;
+    private static final int RC_CHOOSE_PHOTO = 1;
 
 
     public void getPictureFromCamera(Activity activity) {
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED){
+        if (permission != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "onClick: DON't HAVE permission to access the sd image.");
-            verifyStoragePermissions(activity, 1);
+//            verifyStoragePermissions(activity, 1);
+            PictureUtil.verifyStoragePermissions(activity, 1);
+
         } else {
             // Log.d(TAG, "onClick: Have permission to access the SD image.");
             loadSDImage();
@@ -43,16 +46,17 @@ public class PictureUtil extends AppCompatActivity {
     }
 
     /**
+     * @param activity 活动
+     * @param   requestCode 请求码
+     * @return
      * @method
      * @description 权限请求
      * @date: 2021/9/11 22:51
      * @author: wangxianwen
-     * @param
-     * @return
      */
-    private void verifyStoragePermissions(Activity activity, int requestCode) {
-        int permission=ActivityCompat.checkSelfPermission(activity,Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if(permission!=PackageManager.PERMISSION_GRANTED){
+    public static void verifyStoragePermissions(Activity activity, int requestCode) {
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                     activity,
                     new String[]{
@@ -73,8 +77,6 @@ public class PictureUtil extends AppCompatActivity {
         startActivityForResult(intentToPickPic, RC_CHOOSE_PHOTO);
 
 
-
-
     }
 
     // 使用Glide加载手机相册中的图片
@@ -86,8 +88,8 @@ public class PictureUtil extends AppCompatActivity {
             case RC_CHOOSE_PHOTO:
                 if (data != null) {
                     String realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this, data.getData());
-                   // mEditor.insertImage("file://"+realPathFromUri, "");
-                    Log.d(TAG, "onActivityResult: image url="+realPathFromUri);
+                    // mEditor.insertImage("file://"+realPathFromUri, "");
+                    Log.d(TAG, "onActivityResult: image url=" + realPathFromUri);
                 } else {
                     Toast.makeText(this, "图片损坏，请重新选择", Toast.LENGTH_SHORT).show();
                 }
@@ -101,6 +103,24 @@ public class PictureUtil extends AppCompatActivity {
                 break;
 
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //Log.d(TAG, "onRequestPermissionsResult: User Granted the SD Permission");
+                    loadSDImage();
+                } else {
+                    //Log.d(TAG, "onRequestPermissionsResult: User denied the SD Permission");
+                    Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+        }
+
     }
 
 
