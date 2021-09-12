@@ -9,8 +9,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -19,9 +17,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.util.MyTimeUtil;
 import com.example.myandroidnotes.util.RealPathFromUriUtils;
@@ -133,7 +128,7 @@ public class AddActivity extends AppCompatActivity {
 
     }
 
-    private String getPictureFromCamera() {
+    private void getPictureFromCamera() {
         int permission = ActivityCompat.checkSelfPermission(AddActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED){
             Log.d(TAG, "onClick: DON't HAVE permission to access the sd image.");
@@ -143,7 +138,6 @@ public class AddActivity extends AppCompatActivity {
             loadSDImage();
         }
 
-        return null;
     }
 
 

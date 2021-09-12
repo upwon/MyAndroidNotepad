@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.util.MyTimeUtil;
+import com.example.myandroidnotes.util.PictureUtil;
 import com.example.myandroidnotes.util.ToastUtil;
 import com.yyp.editor.RichEditor;
 import com.yyp.editor.bean.MaterialsMenuBean;
@@ -20,6 +22,7 @@ import com.yyp.editor.widget.EditorOpMenuView;
 
 public class EditActivity extends AppCompatActivity {
 
+    private static final String TAG = "EditActivity";
     private Notes note;
     private EditText etTitle;
     private EditText etContent;
@@ -28,6 +31,8 @@ public class EditActivity extends AppCompatActivity {
 
     private RichEditor mEditor;
     private EditorOpMenuView mEditorOpMenuView;
+    PictureUtil pictureUtil = new PictureUtil();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +47,19 @@ public class EditActivity extends AppCompatActivity {
         mEditor = findViewById(R.id.et_content);
         mEditorOpMenuView = findViewById(R.id.editor_op_menu_view);
 
-
-        mEditor.setEditorFontSize(16); //设置文字大小
-        mEditor.setPadding(10, 10, 10, 10); //设置编辑器内边距
-        mEditor.setBackgroundColor(getResources().getColor(R.color._ffffff)); //设置编辑器背景色
-        mEditor.hideWhenViewFocused((EditText) findViewById(R.id.et_title)); //设置焦点变化监听
+        //设置文字大小
+        mEditor.setEditorFontSize(16);
+        //设置编辑器内边距
+        mEditor.setPadding(10, 10, 10, 10);
+        //设置编辑器背景色
+        mEditor.setBackgroundColor(getResources().getColor(R.color._ffffff));
+        //设置焦点变化监听
+        mEditor.hideWhenViewFocused((EditText) findViewById(R.id.et_title));
         mEditor.setOnEditorFocusListener(new OnEditorFocusListener() {
             @Override
             public void onEditorFocus(boolean isFocus) {
-                mEditorOpMenuView.displayMaterialsMenuView(false); //编辑器重获焦点，素材菜单要隐藏
+                //编辑器重获焦点，素材菜单要隐藏
+                mEditorOpMenuView.displayMaterialsMenuView(false);
                 mEditorOpMenuView.setVisibility(isFocus ? View.VISIBLE : View.GONE);
             }
         });
@@ -69,7 +78,8 @@ public class EditActivity extends AppCompatActivity {
             public void onMaterialsItemClick(MaterialsMenuBean bean) {
                 switch (bean.getId()) {
                     case MATERIALS_IMAGE: //从素材图片库选择 最大3个
-                        mEditor.insertImage("https://tvax3.sinaimg.cn/large/003pPIslgy1gu9kz1s96xj60y70j5aio02.jpg", ""); //插入图片到编辑器
+                        // 插入图片到编辑器
+                        mEditor.insertImage("https://tvax3.sinaimg.cn/large/003pPIslgy1gu9kz1s96xj60y70j5aio02.jpg", "");
                         break;
                     case MATERIALS_VIDEO: //从素材视频库选择 最大3个
                         mEditor.insertVideoFrame("视频封面地址",
@@ -78,9 +88,18 @@ public class EditActivity extends AppCompatActivity {
                     case MATERIALS_TXT: //从素材文字库选择 最大1个
                         mEditor.insertHtml("新增文本内容"); //插入文本到编辑器
                         break;
-                    case LOCAL_IMAGE:   // 本地選取圖片
-                        mEditor.insertImage("https://tvax2.sinaimg.cn/large/ba920825gy1grdb8wqvaaj21s80to13l.jpg", "");
+
+                    // TODO: 待完成插入本地图片
+                    case LOCAL_IMAGE:
+                        Log.d(TAG, "onMaterialsItemClick: 插入本地图片");
+                        pictureUtil.getPictureFromCamera(EditActivity.this);
+
+                        // getPictureFromCamera();
                         break;
+                    default:
+                        Log.d(TAG, "onMaterialsItemClick: switch case 异常");
+                        break;
+
 
                 }
             }
