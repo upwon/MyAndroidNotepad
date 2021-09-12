@@ -76,6 +76,7 @@ public class RichEditor extends WebView {
         getSettings().setJavaScriptEnabled(true);
         setWebChromeClient(new WebChromeClient());
         setWebViewClient(createWebViewClient());
+
         //打开cookie
         android.webkit.CookieManager cookieManager = android.webkit.CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
@@ -210,9 +211,12 @@ public class RichEditor extends WebView {
             // 需要使用 file 协议
             webSettings.setAllowFileAccess(true);
             // 不允许通过 file url 加载的js代码读取其他的本地文件
-            webSettings.setAllowFileAccessFromFileURLs(false);
+           webSettings.setAllowFileAccessFromFileURLs(false);
+          //  webSettings.setAllowFileAccessFromFileURLs(true);
+
             // 不允许通过 file url 加载的js访问其他的源(包括http、https等源)
-            webSettings.setAllowUniversalAccessFromFileURLs(false);
+           webSettings.setAllowUniversalAccessFromFileURLs(false);
+           // webSettings.setAllowUniversalAccessFromFileURLs(true);
         }
     }
 

@@ -1,15 +1,30 @@
 package com.example.myandroidnotes;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.util.MyTimeUtil;
+import com.example.myandroidnotes.util.RealPathFromUriUtils;
 import com.example.myandroidnotes.util.ToastUtil;
 import com.yyp.editor.RichEditor;
 import com.yyp.editor.bean.MaterialsMenuBean;
@@ -32,12 +47,14 @@ import com.yyp.editor.widget.EditorOpMenuView;
  */
 public class AddActivity extends AppCompatActivity {
 
-    private static final String TAG = "AddActivity";
+    private static final String TAG = "AddActivityDebug";
     private EditText etTitle;
     private EditText etContent;
     private RichEditor mEditor;
     private EditorOpMenuView mEditorOpMenuView;
     private NoteDbOpenHelper mNoteDbOpenHelper;
+    // 从相册选择照片的类库
+    public static final int RC_CHOOSE_PHOTO = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +102,7 @@ public class AddActivity extends AppCompatActivity {
 
                     // TODO: 待完成输入网络图片的输入框
                     case MATERIALS_IMAGE: //从素材图片库选择 最大3个
+//                        String result=getPictureFromCamera();
                         mEditor.insertImage("https://tvax3.sinaimg.cn/large/003pPIslgy1gu9kz1s96xj60y70j5aio02.jpg", ""); //插入图片到编辑器
                         break;
                     case MATERIALS_VIDEO: //从素材视频库选择 最大3个
@@ -96,7 +114,11 @@ public class AddActivity extends AppCompatActivity {
                         break;
                     // TODO: 待完成插入本地图片
                     case LOCAL_IMAGE:
-                        mEditor.insertImage("https://tvax2.sinaimg.cn/large/ba920825gy1grdb8wqvaaj21s80to13l.jpg", "");
+                        Log.d(TAG, "onMaterialsItemClick: 插入本地图片");
+
+                        getPictureFromCamera();
+                        break;
+                     //   mEditor.insertImage("https://tvax2.sinaimg.cn/large/ba920825gy1grdb8wqvaaj21s80to13l.jpg", "");
                     default:
                         Log.d(TAG, "onMaterialsItemClick: switch case 异常");
                         break;
@@ -110,6 +132,99 @@ public class AddActivity extends AppCompatActivity {
 
 
     }
+
+    private String getPictureFromCamera() {
+        int permission = ActivityCompat.checkSelfPermission(AddActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED){
+            Log.d(TAG, "onClick: DON't HAVE permission to access the sd image.");
+            verifyStoragePermissions(AddActivity.this, 1);
+        } else {
+            // Log.d(TAG, "onClick: Have permission to access the SD image.");
+            loadSDImage();
+        }
+
+        return null;
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case 1:
+                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    //Log.d(TAG, "onRequestPermissionsResult: User Granted the SD Permission");
+                    loadSDImage();
+                } else {
+                    //Log.d(TAG, "onRequestPermissionsResult: User denied the SD Permission");
+                    Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+        }
+
+    }
+
+    /**
+     * @method
+     * @description 权限请求
+     * @date: 2021/9/11 22:51
+     * @author: wangxianwen
+     * @param
+     * @return
+     */
+    private void verifyStoragePermissions(Activity activity, int requestCode) {
+        int permission=ActivityCompat.checkSelfPermission(activity,Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if(permission!=PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(
+                    activity,
+                    new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },
+                    requestCode
+            );
+        }
+
+    }
+
+    private void loadSDImage() {
+
+        Intent intentToPickPic = new Intent(Intent.ACTION_PICK, null);
+        intentToPickPic.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        startActivityForResult(intentToPickPic, RC_CHOOSE_PHOTO);
+
+
+
+
+    }
+
+    // 使用Glide加载手机相册中的图片
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case RC_CHOOSE_PHOTO:
+                if (data != null) {
+                    String realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this, data.getData());
+                    mEditor.insertImage("file://"+realPathFromUri, "");
+                    Log.d(TAG, "onActivityResult: image url="+realPathFromUri);
+                } else {
+                    Toast.makeText(this, "图片损坏，请重新选择", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+
+            default:
+
+                Log.d(TAG, "onActivityResult: default");
+
+                break;
+
+        }
+    }
+
 
     /**
      * @param
