@@ -46,9 +46,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mNoteDbOpenHelper = new NoteDbOpenHelper(mContext);
     }
 
-    public int getViewType() {
-        return viewType;
-    }
+
 
     public void setViewType(int viewType) {
         this.viewType = viewType;
@@ -70,7 +68,6 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return myGridViewHolder;
 
         }
-
 
         return null;
     }
@@ -250,7 +247,9 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int getItemCount() {
         return mList.size();
     }
-
+    public int getViewType() {
+        return viewType;
+    }
 
     /**
      * @param

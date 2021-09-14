@@ -39,15 +39,15 @@ public class MainActivity extends AppCompatActivity {
     public static final String KEY_LAYOUT_MODE = "key_layout_mode";
     public static final int MODE_LINEAR = 0;
     public static final int MODE_GRID = 1;
-    
-  
+
+
     /**
+     * @param
+     * @return
      * @method
      * @description 初始化View->初始化数据->初始化事件
      * @date: 2021/9/8 19:48
      * @author: wangxianwen
-     * @param 
-     * @return 
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +61,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * @param
+     * @return
      * @method
      * @description 重写onResume 保证打开软件或新增笔记后 数据刷新
      * @date: 2021/9/10 19:51
      * @author: wangxianwen
-     * @param 
-     * @return 
      */
     @Override
     protected void onResume() {
@@ -75,22 +75,20 @@ public class MainActivity extends AppCompatActivity {
         setListLayout();
     }
 
-   /**
-    * @method  refreshDataFromDb
-    * @description  从数据库中获取所有数据  并让Adapter去通知UI刷新示数据
-    * @date: 2021/9/10 20:05
-    * @author: wangxianwen
-    * @param
-    * @return
-    */
+    /**
+     * @param
+     * @return
+     * @method refreshDataFromDb
+     * @description 从数据库中获取所有数据  并让Adapter去通知UI刷新示数据
+     * @date: 2021/9/10 20:05
+     * @author: wangxianwen
+     */
     private void refreshDataFromDb() {
         mNoteDbOpenHelper = new NoteDbOpenHelper(this);
         mNotes = mNoteDbOpenHelper.queryAllNotes();
         //  Collections.reverse(mNotes);
         mAdapter.refreshDate(mNotes);
     }
-
-
 
 
     private void initView() {
@@ -100,12 +98,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * @param
+     * @return
      * @method
      * @description 初始化数据库操作对象
      * @date: 2021/9/10 20:06
      * @author: wangxianwen
-     * @param
-     * @return
      */
     private void initData() {
 
@@ -126,12 +124,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * @method  initEvents
+     * @param
+     * @return
+     * @method initEvents
      * @description 初始化事件，完成事件绑定
      * @date: 2021/9/10 20:06
      * @author: wangxianwen
-     * @param
-     * @return
      */
     private void initEvents() {
         mAdapter = new MyAdapter(this, mNotes);     // 构造 Adapter 对象
@@ -144,12 +142,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * @param
+     * @return
      * @method setListLayout
      * @description 设置布局
      * @date: 2021/9/10 20:07
      * @author: wangxianwen
-     * @param
-     * @return
      */
     private void setListLayout() {
         currentListLayoutMode = SpfUtil.getIntWithDefault(this, KEY_LAYOUT_MODE, MODE_LINEAR);
@@ -162,16 +160,50 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * @param
+     * @return
+     * @method setToLinearList
+     * @description 设置为列表布局
+     * @date: 2021/9/10 20:09
+     * @author: wangxianwen
+     */
+    private void setToLinearList() {
 
+        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+
+//        mRecyclerView.addItemDecoration();
+        mAdapter.setViewType(MyAdapter.TYPE_LINEAR_LAYOUT);
+        mAdapter.notifyDataSetChanged();
+    }
 
 
     /**
-     * @method  addNotes
+     * @param
+     * @return
+     * @method setToGridList
+     * @description 设置为网格布局
+     * @date: 2021/9/10 20:10
+     * @author: wangxianwen
+     */
+    private void setToGridList() {
+
+        RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+        mAdapter.setViewType(MyAdapter.TYPE_GRID_LAYOUT);
+        mAdapter.notifyDataSetChanged();
+
+    }
+
+
+    /**
+     * @param
+     * @return
+     * @method addNotes
      * @description 启动添加笔记的界面
      * @date: 2021/9/10 20:08
      * @author: wangxianwen
-     * @param
-     * @return
      */
     public void addNotes(View view) {
         Intent intent = new Intent(this, AddActivity.class);
@@ -219,12 +251,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * @method  onOptionsItemSelected
+     * @param
+     * @return
+     * @method onOptionsItemSelected
      * @description 菜单设置
      * @date: 2021/9/10 20:08
      * @author: wangxianwen
-     * @param
-     * @return
      */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -258,40 +290,6 @@ public class MainActivity extends AppCompatActivity {
             menu.findItem(R.id.menu_grid).setChecked(true);
         }
         return super.onPrepareOptionsMenu(menu);
-    }
-
-    /**
-     * @method  setToLinearList
-     * @description 设置为列表布局
-     * @date: 2021/9/10 20:09
-     * @author: wangxianwen
-     * @param
-     * @return
-     */
-    private void setToLinearList() {
-
-        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mAdapter.setViewType(MyAdapter.TYPE_LINEAR_LAYOUT);
-        mAdapter.notifyDataSetChanged();
-    }
-
-
-    /**
-     * @method  setToGridList
-     * @description 设置为网格布局
-     * @date: 2021/9/10 20:10
-     * @author: wangxianwen
-     * @param
-     * @return
-     */
-    private void setToGridList() {
-
-        RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        mRecyclerView.setLayoutManager(gridLayoutManager);
-        mAdapter.setViewType(MyAdapter.TYPE_GRID_LAYOUT);
-        mAdapter.notifyDataSetChanged();
-
     }
 
 

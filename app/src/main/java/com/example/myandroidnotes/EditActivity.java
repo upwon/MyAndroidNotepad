@@ -103,7 +103,7 @@ public class EditActivity extends AppCompatActivity {
                     // TODO: 待完成插入本地图片
                     case LOCAL_IMAGE:
                         Log.d(TAG, "onMaterialsItemClick: 插入本地图片");
-                      //   pictureUtil.getPictureFromCamera(EditActivity.this);
+                        //   pictureUtil.getPictureFromCamera(EditActivity.this);
 
                         getPictureFromCamera(EditActivity.this);
                         break;
