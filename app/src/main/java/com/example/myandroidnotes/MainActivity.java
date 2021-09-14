@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +17,7 @@ import android.view.View;
 
 import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.adapter.MyAdapter;
+import com.example.myandroidnotes.util.ItemTouchHelperCallback;
 import com.example.myandroidnotes.util.SpfUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yyp.editor.RichEditor;
@@ -176,6 +178,12 @@ public class MainActivity extends AppCompatActivity {
 //        mRecyclerView.addItemDecoration();
         mAdapter.setViewType(MyAdapter.TYPE_LINEAR_LAYOUT);
         mAdapter.notifyDataSetChanged();
+
+
+        ItemTouchHelperCallback itemTouchHelperCallback=new ItemTouchHelperCallback(mAdapter);
+        ItemTouchHelper itemTouchHelper=new ItemTouchHelper(itemTouchHelperCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
     }
 
 

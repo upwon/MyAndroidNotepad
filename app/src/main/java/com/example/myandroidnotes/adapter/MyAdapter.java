@@ -106,7 +106,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         });
 
         // 长按
-        holder.rlContainer.setOnLongClickListener(new View.OnLongClickListener() {
+        /*holder.rlContainer.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
 
@@ -182,7 +182,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
 
             }
         });
-
+*/
     }
 
 

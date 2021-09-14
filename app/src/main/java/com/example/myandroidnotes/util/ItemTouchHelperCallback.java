@@ -142,6 +142,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     /**
      * 当 ItemTouchHelper 滑动或拖动的 ViewHolder 发生更改时调用。
+     *
      * @param
      * @return
      * @description 描述一下方法的作用
@@ -151,11 +152,11 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
      */
     @Override
     public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
-        if(actionState!=ItemTouchHelper.ACTION_STATE_IDLE){
+        if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
 
-            if(viewHolder instanceof ItemTouchHelperAdapter){
+            if (viewHolder instanceof ItemTouchHelperAdapter) {
 
-                ItemTouchHelperViewHolder itemViewHolder=(ItemTouchHelperViewHolder) viewHolder;
+                ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
                 // 选中状态回调
                 itemViewHolder.onItemSelected();
             }
@@ -163,5 +164,14 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         }
 
         super.onSelectedChanged(viewHolder, actionState);
+    }
+
+    @Override
+    public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+        super.clearView(recyclerView, viewHolder);
+
+        ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
+        // 未选中状态回调
+        itemViewHolder.onItemClear();
     }
 }
