@@ -170,8 +170,15 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
 
-        ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
-        // 未选中状态回调
-        itemViewHolder.onItemClear();
+        if (viewHolder instanceof ItemTouchHelperViewHolder) {
+            Log.d(TAG, "clearView: 此处是 ItemTouchHelperViewHolder");
+            ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
+            // 未选中状态回调
+            itemViewHolder.onItemClear();
+        }
+
+        Log.d(TAG, "clearView: 此处不是 ItemTouchHelperViewHolder");
+
+
     }
 }
