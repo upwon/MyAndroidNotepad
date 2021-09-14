@@ -20,12 +20,14 @@ import com.example.myandroidnotes.EditActivity;
 import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.Notes;
 import com.example.myandroidnotes.R;
+import com.example.myandroidnotes.util.ItemTouchHelperAdapter;
+import com.example.myandroidnotes.util.ItemTouchHelperCallback;
 import com.example.myandroidnotes.util.TextParse;
 
 
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
 
     private List<Notes> mList;
     private LayoutInflater mLayoutInflater;
@@ -45,7 +47,6 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mLayoutInflater = LayoutInflater.from(mContext);
         mNoteDbOpenHelper = new NoteDbOpenHelper(mContext);
     }
-
 
 
     public void setViewType(int viewType) {
@@ -247,6 +248,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int getItemCount() {
         return mList.size();
     }
+
     public int getViewType() {
         return viewType;
     }
@@ -277,6 +279,25 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void refreshDate(List<Notes> notes) {
         this.mList = notes;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        // 交换列表中指定位置的数据
+        Notes fromNote = mList.get(fromPosition);
+        mList.remove(fromNote);
+        mList.add(toPosition, fromNote);
+        notifyItemMoved(fromPosition, toPosition);
+
+        return false;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        // 移除
+        mList.remove(position);
+        notifyItemRemoved(position);
+
     }
 
 
