@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,20 +26,20 @@ import com.example.myandroidnotes.util.ItemTouchHelperCallback;
 import com.example.myandroidnotes.util.TextParse;
 
 
+import java.util.Collections;
 import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
 
+    public static int TYPE_LINEAR_LAYOUT = 0;
+    public static int TYPE_GRID_LAYOUT = 1;
+    private static final String TAG = "MyAdapter";
     private List<Notes> mList;
     private LayoutInflater mLayoutInflater;
     private Context mContext;
-
-    private NoteDbOpenHelper mNoteDbOpenHelper;
-
     private int viewType;
 
-    public static int TYPE_LINEAR_LAYOUT = 0;
-    public static int TYPE_GRID_LAYOUT = 1;
+    private NoteDbOpenHelper mNoteDbOpenHelper;
 
 
     public MyAdapter(Context mContext, List<Notes> mList) {
@@ -60,12 +61,13 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         if (viewType == TYPE_LINEAR_LAYOUT) {
             View view = mLayoutInflater.inflate(R.layout.list_item_layout, parent, false);
             MyViewHolder myViewHolder = new MyViewHolder(view);
-
+            Log.d(TAG, "onCreateViewHolder: viewType == TYPE_LINEAR_LAYOUT");
             return myViewHolder;
 
         } else if (viewType == TYPE_GRID_LAYOUT) {
             View view = mLayoutInflater.inflate(R.layout.list_item_grid_layout, parent, false);
             MyGridViewHolder myGridViewHolder = new MyGridViewHolder(view);
+            Log.d(TAG, "onCreateViewHolder: viewType == TYPE_GRID_LAYOUT");
             return myGridViewHolder;
 
         }
@@ -78,9 +80,12 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         if (holder == null) {
             return;
         }
+        Log.d(TAG, "onBindViewHolder: holder = "+holder);
         if (holder instanceof MyViewHolder) {
+            Log.d(TAG, "onBindViewHolder: holder instanceof MyViewHolder");
             bindMyViewHolder((MyViewHolder) holder, position);
         } else if (holder instanceof MyGridViewHolder) {
+            Log.d(TAG, "onBindViewHolder: holder instanceof MyGridViewHolder");
             bindGridViewHolder((MyGridViewHolder) holder, position);
 
         }
@@ -106,9 +111,8 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         });
 
 
-
         // 长按
-        
+
        /* holder.rlContainer.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -188,6 +192,11 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     }
 
 
+    /**
+     * 绑定网格布局 ViewHolder
+     * @param holder
+     * @param position
+     */
     private void bindGridViewHolder(MyGridViewHolder holder, int position) {
         Notes note = mList.get(position);
         holder.mTvTitle.setText(note.getTitle());
@@ -291,7 +300,20 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         mList.add(toPosition, fromNote);
         notifyItemMoved(fromPosition, toPosition);
 
-        return false;
+//        notifyItemRangeChanged(Math.min(fromPosition, toPosition), Math.abs(fromPosition - toPosition) +1);
+
+       /* if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mList, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mList, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);*/
+
+        return true;
     }
 
     @Override

@@ -1,6 +1,9 @@
 package com.example.myandroidnotes.util;
 
 
+import android.app.Service;
+import android.graphics.Color;
+import android.os.Vibrator;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,6 +24,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     private static final String TAG = "ItemTouchHelperCallback";
+    private static final float ALPHA_FULL = 1.0f;
     private final ItemTouchHelperAdapter mAdapter;
 
 
@@ -87,7 +91,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         }
 
         // 网格布局设置能够上下左右四个方向拖动 不需要滑动
-        if (recyclerView.getLayoutManager() instanceof GridLayoutManager
+        else if (recyclerView.getLayoutManager() instanceof GridLayoutManager
                 || recyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
             Log.d(TAG, "getMovementFlags: " + recyclerView.getLayoutManager().toString() + "布局");
             final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
@@ -152,9 +156,16 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
      */
     @Override
     public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+        super.onSelectedChanged(viewHolder, actionState);
+
+        // 长按时改变选中条目的背景色
+        if(actionState == ItemTouchHelper.ACTION_STATE_DRAG){
+            viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
+        }
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
 
             if (viewHolder instanceof ItemTouchHelperAdapter) {
+
 
                 ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
                 // 选中状态回调
@@ -163,12 +174,21 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
         }
 
-        super.onSelectedChanged(viewHolder, actionState);
     }
 
+    /**
+     *  拖拽或者滑动结束后调用
+     * @param recyclerView
+     * @param viewHolder
+     */
     @Override
     public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
+
+        // 清楚背景颜色设置
+        viewHolder.itemView.setBackgroundColor(Color.TRANSPARENT);
+
+        viewHolder.itemView.setAlpha(ALPHA_FULL);
 
         if (viewHolder instanceof ItemTouchHelperViewHolder) {
             Log.d(TAG, "clearView: 此处是 ItemTouchHelperViewHolder");
