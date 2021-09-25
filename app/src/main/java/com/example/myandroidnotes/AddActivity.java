@@ -191,6 +191,22 @@ public class AddActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "确认操作", Toast.LENGTH_LONG).show();
                 Log.d(TAG, "onClick: 确认");
+
+                if (editTextPictureURL.getText().toString().trim().equals("")) {
+                    Toast.makeText(getApplicationContext(), "输入为空，请重新输入", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "onClick: 输入为空，请重新输入"
+                            + editTextPictureURL.getText());
+
+                }
+                // 合法性校验
+                else if(!editTextPictureURL.getText().toString().substring(0,4).equals("http")){
+
+                    Log.d(TAG, "onClick: 非法URL"+editTextPictureURL.getText().toString());
+                }
+                else{
+                    mEditor.insertImage(editTextPictureURL.getText().toString(), ""); //插入图片到编辑器
+                }
+
                 dialog.dismiss();
 
             }
