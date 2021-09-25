@@ -351,6 +351,25 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
             this.mTvContent = itemView.findViewById(R.id.tv_content);
             this.mTvTime = itemView.findViewById(R.id.tv_time);
             this.rlContainer = itemView.findViewById(R.id.rl_item_container);
+
+
+            // ----------------------------------------
+
+
+
+
+            // ----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
         }
 
         @Override

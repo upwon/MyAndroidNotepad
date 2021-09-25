@@ -168,15 +168,13 @@ public class AddActivity extends AppCompatActivity {
 
 
         lp.width = (int) (ScreenSizeUtils.getInstance(this).getScreenWidth() * 0.85f);
-        lp.height = (int) (ScreenSizeUtils.getInstance(this).getScreenHeight()*0.45f);
+        lp.height = (int) (ScreenSizeUtils.getInstance(this).getScreenHeight() * 0.45f);
 //        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         lp.gravity = Gravity.CENTER;
 
         dialogWindow.setAttributes(lp);
 //        dialogWindow.setGravity(Gravity.CENTER);
         dialogWindow.setWindowAnimations(R.style.normalDialogAnim);
-
-
 
 
         openPictureBedActivity.setOnClickListener(new View.OnClickListener() {
