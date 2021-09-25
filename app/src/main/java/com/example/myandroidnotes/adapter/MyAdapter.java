@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.example.myandroidnotes.Notes;
 import com.example.myandroidnotes.R;
 import com.example.myandroidnotes.util.ItemTouchHelperAdapter;
 import com.example.myandroidnotes.util.ItemTouchHelperCallback;
+import com.example.myandroidnotes.util.ItemTouchHelperViewHolder;
 import com.example.myandroidnotes.util.TextParse;
 
 
@@ -54,9 +56,46 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         this.viewType = viewType;
     }
 
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        // 交换列表中指定位置的数据
+        Notes fromNote = mList.get(fromPosition);
+        mList.remove(fromNote);
+        mList.add(toPosition, fromNote);
+        notifyItemMoved(fromPosition, toPosition);
+
+//        Collections.swap(mList, fromPosition, toPosition);
+//        notifyItemMoved(fromPosition, toPosition);
+
+
+//        notifyItemRangeChanged(Math.min(fromPosition, toPosition), Math.abs(fromPosition - toPosition) +1);
+
+       /* if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mList, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mList, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);*/
+
+        return true;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        // 移除
+        mList.remove(position);
+        notifyItemRemoved(position);
+
+    }
+
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder  onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         if (viewType == TYPE_LINEAR_LAYOUT) {
             View view = mLayoutInflater.inflate(R.layout.list_item_layout, parent, false);
@@ -113,7 +152,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
 
         // 长按
 
-       /* holder.rlContainer.setOnLongClickListener(new View.OnLongClickListener() {
+      /*  holder.rlContainer.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
 
@@ -192,11 +231,14 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     }
 
 
+
+
     /**
      * 绑定网格布局 ViewHolder
      * @param holder
      * @param position
      */
+
     private void bindGridViewHolder(MyGridViewHolder holder, int position) {
         Notes note = mList.get(position);
         holder.mTvTitle.setText(note.getTitle());
@@ -211,7 +253,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
             }
         });
 
-        holder.rlContainer.setOnLongClickListener(new View.OnLongClickListener() {
+     /*   holder.rlContainer.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
 
@@ -252,7 +294,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
 
             }
         });
-
+*/
     }
 
     @Override
@@ -292,40 +334,10 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         notifyDataSetChanged();
     }
 
-    @Override
-    public boolean onItemMove(int fromPosition, int toPosition) {
-        // 交换列表中指定位置的数据
-        Notes fromNote = mList.get(fromPosition);
-        mList.remove(fromNote);
-        mList.add(toPosition, fromNote);
-        notifyItemMoved(fromPosition, toPosition);
-
-//        notifyItemRangeChanged(Math.min(fromPosition, toPosition), Math.abs(fromPosition - toPosition) +1);
-
-       /* if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(mList, i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(mList, i, i - 1);
-            }
-        }
-        notifyItemMoved(fromPosition, toPosition);*/
-
-        return true;
-    }
-
-    @Override
-    public void onItemDismiss(int position) {
-        // 移除
-        mList.remove(position);
-        notifyItemRemoved(position);
-
-    }
 
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
+
+    public class MyViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
         TextView mTvTitle;
         TextView mTvContent;
@@ -340,9 +352,21 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
             this.mTvTime = itemView.findViewById(R.id.tv_time);
             this.rlContainer = itemView.findViewById(R.id.rl_item_container);
         }
+
+        @Override
+        public void onItemSelected() {
+            itemView.setBackgroundColor(Color.LTGRAY);
+        }
+
+        @Override
+        public void onItemClear() {
+            itemView.setBackgroundColor(0);
+        }
+
+
     }
 
-    class MyGridViewHolder extends RecyclerView.ViewHolder {
+    public class MyGridViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder{
         TextView mTvTitle;
         TextView mTvContent;
         TextView mTvTime;
@@ -354,6 +378,17 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
             this.mTvContent = itemView.findViewById(R.id.grid_tv_content);
             this.mTvTime = itemView.findViewById(R.id.grid_tv_time);
             this.rlContainer = itemView.findViewById(R.id.rl_item_container);
+        }
+
+        @Override
+        public void onItemSelected() {
+            itemView.setBackgroundColor(Color.LTGRAY);
+
+        }
+
+        @Override
+        public void onItemClear() {
+            itemView.setBackgroundColor(0);
         }
     }
 

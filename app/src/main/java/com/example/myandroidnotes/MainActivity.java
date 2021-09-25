@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,8 +33,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
-    private int currentListLayoutMode = MODE_LINEAR;    // 记录布局为列表视图还是
+    // 记录布局为列表视图还是网格布局
+    private int currentListLayoutMode = MODE_LINEAR;
     private RecyclerView mRecyclerView;
+    private ItemTouchHelper itemTouchHelper;
     private FloatingActionButton mButtonAdd;
     private List<Notes> mNotes;
     private MyAdapter mAdapter;
@@ -111,15 +114,6 @@ public class MainActivity extends AppCompatActivity {
 
         mNotes = new ArrayList<Notes>();
 
-//        for (int i = 0; i < 20; i++) {
-//            Notes note=new Notes();
-//            note.setTitle("这是标题"+i);
-//            note.setContents("包括新增一张表，新增表中的一个字段，删除表中的一个字段，删除表等，每一次的升级操作litepal.xml文件中数据库的版本号都必须加");
-//            note.setTime(getCurrentTime());
-//
-//            mNotes.add(note);
-//        }
-
         mNoteDbOpenHelper = new NoteDbOpenHelper(this);
 
 
@@ -170,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
      * @date: 2021/9/10 20:09
      * @author: wangxianwen
      */
+    @SuppressLint("NotifyDataSetChanged")
     private void setToLinearList() {
 
         RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -180,8 +175,8 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
 
 
-        ItemTouchHelperCallback itemTouchHelperCallback=new ItemTouchHelperCallback(mAdapter);
-        ItemTouchHelper itemTouchHelper=new ItemTouchHelper(itemTouchHelperCallback);
+        ItemTouchHelperCallback itemTouchHelperCallback = new ItemTouchHelperCallback(mAdapter);
+        itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
     }
@@ -195,12 +190,17 @@ public class MainActivity extends AppCompatActivity {
      * @date: 2021/9/10 20:10
      * @author: wangxianwen
      */
+    @SuppressLint("NotifyDataSetChanged")
     private void setToGridList() {
 
         RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mAdapter.setViewType(MyAdapter.TYPE_GRID_LAYOUT);
         mAdapter.notifyDataSetChanged();
+
+        ItemTouchHelperCallback itemTouchHelperCallback = new ItemTouchHelperCallback(mAdapter);
+        itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
     }
 

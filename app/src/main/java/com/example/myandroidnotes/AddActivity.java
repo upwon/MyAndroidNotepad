@@ -7,19 +7,25 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.util.MyTimeUtil;
 import com.example.myandroidnotes.util.RealPathFromUriUtils;
+import com.example.myandroidnotes.util.ScreenSizeUtils;
 import com.example.myandroidnotes.util.ToastUtil;
 import com.yyp.editor.RichEditor;
 import com.yyp.editor.bean.MaterialsMenuBean;
@@ -98,7 +104,11 @@ public class AddActivity extends AppCompatActivity {
                     // TODO: 待完成输入网络图片的输入框
                     case MATERIALS_IMAGE: //从素材图片库选择 最大3个
 //                        String result=getPictureFromCamera();
-                        mEditor.insertImage("https://tvax3.sinaimg.cn/large/003pPIslgy1gu9kz1s96xj60y70j5aio02.jpg", ""); //插入图片到编辑器
+                        //  mEditor.insertImage("https://tvax3.sinaimg.cn/large/003pPIslgy1gu9kz1s96xj60y70j5aio02.jpg", ""); //插入图片到编辑器
+
+                        customDialog();
+
+
                         break;
                     case MATERIALS_VIDEO: //从素材视频库选择 最大3个
                         mEditor.insertVideoFrame("视频封面地址",
@@ -113,7 +123,7 @@ public class AddActivity extends AppCompatActivity {
 
                         getPictureFromCamera();
                         break;
-                     //   mEditor.insertImage("https://tvax2.sinaimg.cn/large/ba920825gy1grdb8wqvaaj21s80to13l.jpg", "");
+                    //   mEditor.insertImage("https://tvax2.sinaimg.cn/large/ba920825gy1grdb8wqvaaj21s80to13l.jpg", "");
                     default:
                         Log.d(TAG, "onMaterialsItemClick: switch case 异常");
                         break;
@@ -128,9 +138,77 @@ public class AddActivity extends AppCompatActivity {
 
     }
 
+    
+    private void customDialog() {
+
+        final Dialog dialog = new Dialog(this, R.style.NormalDialogStyle);
+
+        View view_dialg = View.inflate(this, R.layout.dialog_layout, null);
+
+
+        final EditText editTextPictureURL = view_dialg.findViewById(R.id.editTextPictureURL);
+        final Button openPictureBedActivity = view_dialg.findViewById(R.id.open_picture_bed_activity);
+        final Button button_confirmUpload = view_dialg.findViewById(R.id.button_confirmUpload);
+        final Button button_cancelOperation = view_dialg.findViewById(R.id.button_cancelOperation);
+
+
+        dialog.setContentView(view_dialg);
+
+
+        // 设置点击对话框外部不消失对话款
+        dialog.setCanceledOnTouchOutside(true);
+
+        // 设置对话框大小
+
+        view_dialg.setMinimumHeight(ScreenSizeUtils.getInstance(this).getScreenHeight());
+
+        Window dialogWindow = dialog.getWindow();
+
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+
+        lp.width = ScreenSizeUtils.getInstance(this).getScreenWidth();
+        lp.height = ScreenSizeUtils.getInstance(this).getScreenHeight();
+        lp.gravity = Gravity.CENTER;
+
+        dialogWindow.setAttributes(lp);
+
+        openPictureBedActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "打开图床操作", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "onClick: 打开图床");
+                dialog.dismiss();
+            }
+        });
+
+        button_confirmUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "确认操作", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "onClick: 确认");
+                dialog.dismiss();
+
+            }
+        });
+
+        button_cancelOperation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "取消操作", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "onClick: 取消操作");
+                dialog.dismiss();
+            }
+        });
+
+
+        dialog.show();
+
+
+    }
+
     private void getPictureFromCamera() {
         int permission = ActivityCompat.checkSelfPermission(AddActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED){
+        if (permission != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "onClick: DON't HAVE permission to access the sd image.");
             verifyStoragePermissions(AddActivity.this, 1);
         } else {
@@ -144,9 +222,9 @@ public class AddActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
+        switch (requestCode) {
             case 1:
-                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //Log.d(TAG, "onRequestPermissionsResult: User Granted the SD Permission");
                     loadSDImage();
                 } else {
@@ -160,16 +238,16 @@ public class AddActivity extends AppCompatActivity {
     }
 
     /**
+     * @param
+     * @return
      * @method
      * @description 权限请求
      * @date: 2021/9/11 22:51
      * @author: wangxianwen
-     * @param
-     * @return
      */
     private void verifyStoragePermissions(Activity activity, int requestCode) {
-        int permission=ActivityCompat.checkSelfPermission(activity,Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if(permission!=PackageManager.PERMISSION_GRANTED){
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                     activity,
                     new String[]{
@@ -189,8 +267,6 @@ public class AddActivity extends AppCompatActivity {
         startActivityForResult(intentToPickPic, RC_CHOOSE_PHOTO);
 
 
-
-
     }
 
     // 使用Glide加载手机相册中的图片
@@ -202,8 +278,8 @@ public class AddActivity extends AppCompatActivity {
             case RC_CHOOSE_PHOTO:
                 if (data != null) {
                     String realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this, data.getData());
-                    mEditor.insertImage("file://"+realPathFromUri, "");
-                    Log.d(TAG, "onActivityResult: image url="+realPathFromUri);
+                    mEditor.insertImage("file://" + realPathFromUri, "");
+                    Log.d(TAG, "onActivityResult: image url=" + realPathFromUri);
                 } else {
                     Toast.makeText(this, "图片损坏，请重新选择", Toast.LENGTH_SHORT).show();
                 }

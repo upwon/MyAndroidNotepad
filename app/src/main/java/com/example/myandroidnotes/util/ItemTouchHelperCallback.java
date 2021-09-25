@@ -2,6 +2,7 @@ package com.example.myandroidnotes.util;
 
 
 import android.app.Service;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Vibrator;
 import android.util.Log;
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.example.myandroidnotes.adapter.MyAdapter;
+
 /**
  * @ClassName: ItemTouchHelperCallback
  * @Description: java类作用描述
@@ -25,7 +28,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     private static final String TAG = "ItemTouchHelperCallback";
     private static final float ALPHA_FULL = 1.0f;
-    private final ItemTouchHelperAdapter mAdapter;
+    private  ItemTouchHelperAdapter mAdapter;
 
 
     public ItemTouchHelperCallback(ItemTouchHelperAdapter adapter) {
@@ -122,7 +125,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
                     + "target.getItemViewType() = " + target.getItemViewType());
             return false;
         }
-
+        Log.d(TAG, "onMove: target.getItemViewType() = "+target.getItemViewType() );
+        Log.d(TAG, "onMove: viewHolder.getAdapterPosition()= "+viewHolder.getAdapterPosition()+"  target.getAdapterPosition() = "+ target.getAdapterPosition());
         // 正常情况则通知 adapter 有移动事件发生
         mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
         return true;
@@ -144,6 +148,23 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 
+    @Override
+    public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+        if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+            // 自定义滑动动画
+            final float alpha = ALPHA_FULL - Math.abs(dX) / (float) viewHolder.itemView.getWidth();
+            viewHolder.itemView.setAlpha(alpha);
+            viewHolder.itemView.setTranslationX(dX);
+
+
+        } else {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+        }
+
+    }
+
     /**
      * 当 ItemTouchHelper 滑动或拖动的 ViewHolder 发生更改时调用。
      *
@@ -156,28 +177,36 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
      */
     @Override
     public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
-        super.onSelectedChanged(viewHolder, actionState);
 
         // 长按时改变选中条目的背景色
-        if(actionState == ItemTouchHelper.ACTION_STATE_DRAG){
-            viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
-        }
+//        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+//            viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
+//        }
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+            Log.d(TAG, "onSelectedChanged: actionState != ItemTouchHelper.ACTION_STATE_IDLE , actionState = " + actionState);
 
-            if (viewHolder instanceof ItemTouchHelperAdapter) {
-
-
+            if (viewHolder instanceof ItemTouchHelperViewHolder) {
+                Log.d(TAG, "onSelectedChanged: viewHolder instanceof ItemTouchHelperViewHolder");
                 ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
                 // 选中状态回调
                 itemViewHolder.onItemSelected();
             }
+            else{
+                Log.d(TAG, "onSelectedChanged: viewHolder 不是 instanceof ItemTouchHelperViewHolder");
+                Log.d(TAG, "onSelectedChanged: viewHolder= " + viewHolder.getClass());
+
+            }
+
+            super.onSelectedChanged(viewHolder, actionState);
+
 
         }
 
     }
 
     /**
-     *  拖拽或者滑动结束后调用
+     * 拖拽或者滑动结束后调用
+     *
      * @param recyclerView
      * @param viewHolder
      */
@@ -196,8 +225,12 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
             // 未选中状态回调
             itemViewHolder.onItemClear();
         }
+        else{
+            Log.d(TAG, "clearView: 此处不是 ItemTouchHelperViewHolder");
 
-        Log.d(TAG, "clearView: 此处不是 ItemTouchHelperViewHolder");
+        }
+
+
 
 
     }
