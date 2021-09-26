@@ -182,7 +182,12 @@ public class AddActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "打开图床操作", Toast.LENGTH_LONG).show();
                 Log.d(TAG, "onClick: 打开图床");
-                dialog.dismiss();
+
+                //     Intent intent=new Intent(this,ImageHostingActivity.class);
+
+                openImageHosting(this);
+
+                // dialog.dismiss();
             }
         });
 
@@ -198,12 +203,11 @@ public class AddActivity extends AppCompatActivity {
                             + editTextPictureURL.getText());
 
                 }
-                // 合法性校验
-                else if(!editTextPictureURL.getText().toString().substring(0,4).equals("http")){
+                // 简单的合法性校验
+                else if (!editTextPictureURL.getText().toString().substring(0, 4).equals("http")) {
 
-                    Log.d(TAG, "onClick: 非法URL"+editTextPictureURL.getText().toString());
-                }
-                else{
+                    Log.d(TAG, "onClick: 非法URL" + editTextPictureURL.getText().toString());
+                } else {
                     mEditor.insertImage(editTextPictureURL.getText().toString(), ""); //插入图片到编辑器
                 }
 
@@ -354,4 +358,9 @@ public class AddActivity extends AppCompatActivity {
     }
 
 
+    public void openImageHosting(View.OnClickListener view) {
+        Intent intent = new Intent(this, ImageHostingActivity.class);
+        startActivity(intent);
+        Log.d(TAG, "openImageHosting: " + this + "打开 ImageHostingActivity");
+    }
 }

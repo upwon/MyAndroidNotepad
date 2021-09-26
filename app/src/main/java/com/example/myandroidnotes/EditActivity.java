@@ -7,13 +7,18 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -21,6 +26,7 @@ import com.example.myandroidnotes.DB.NoteDbOpenHelper;
 import com.example.myandroidnotes.util.MyTimeUtil;
 import com.example.myandroidnotes.util.PictureUtil;
 import com.example.myandroidnotes.util.RealPathFromUriUtils;
+import com.example.myandroidnotes.util.ScreenSizeUtils;
 import com.example.myandroidnotes.util.ToastUtil;
 import com.yyp.editor.RichEditor;
 import com.yyp.editor.bean.MaterialsMenuBean;
@@ -50,11 +56,43 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
-    /*    etTitle = findViewById(R.id.et_title);
-        etContent = findViewById(R.id.et_content);*/
 
+        initEditor();
+
+
+        iniData();
+
+    }
+
+    // 使用Glide加载手机相册中的图片
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case RC_CHOOSE_PHOTO:
+                if (data != null) {
+                    String realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this, data.getData());
+                    mEditor.insertImage("file://" + realPathFromUri, "");
+                    Log.d(TAG, "onActivityResult: image url=" + realPathFromUri);
+                } else {
+                    Toast.makeText(this, "图片损坏，请重新选择", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+
+            default:
+
+                Log.d(TAG, "onActivityResult: default");
+
+                break;
+
+        }
+    }
+
+
+    private void initEditor() {
         etTitle = findViewById(R.id.et_title);
-        // etContent=findViewById(R.id.et_content);
         mEditor = findViewById(R.id.et_content);
         mEditorOpMenuView = findViewById(R.id.editor_op_menu_view);
 
@@ -90,7 +128,8 @@ public class EditActivity extends AppCompatActivity {
                 switch (bean.getId()) {
                     case MATERIALS_IMAGE: //从素材图片库选择 最大3个
                         // 插入图片到编辑器
-                        mEditor.insertImage("https://tvax3.sinaimg.cn/large/003pPIslgy1gu9kz1s96xj60y70j5aio02.jpg", "");
+                        // mEditor.insertImage("https://tvax3.sinaimg.cn/large/003pPIslgy1gu9kz1s96xj60y70j5aio02.jpg", "");
+                        customDialog();
                         break;
                     case MATERIALS_VIDEO: //从素材视频库选择 最大3个
                         mEditor.insertVideoFrame("视频封面地址",
@@ -116,8 +155,113 @@ public class EditActivity extends AppCompatActivity {
             }
         });
 
+    }
 
-        iniData();
+
+    // 获取传递过来的数据
+    private void iniData() {
+        Intent intent = getIntent();
+        note = (Notes) intent.getSerializableExtra("note");
+        if (note != null) {
+            etTitle.setText(note.getTitle());
+            // 更改编辑器
+            // etContent.setText(note.getContents());
+            mEditor.setHtml(note.getContents());
+        }
+
+    }
+
+
+    private void customDialog() {
+        
+        final Dialog dialog = new Dialog(this, R.style.NormalDialogStyle);
+
+        View viewDialg = View.inflate(this, R.layout.dialog_layout, null);
+
+
+        final EditText editTextPictureURL = viewDialg.findViewById(R.id.editTextPictureURL);
+        final Button openPictureBedActivity = viewDialg.findViewById(R.id.open_picture_bed_activity);
+        final Button buttonOK = viewDialg.findViewById(R.id.button_confirmUpload);
+        final Button buttonCancelOperation = viewDialg.findViewById(R.id.button_cancelOperation);
+
+
+        dialog.setContentView(viewDialg);
+        
+        // 设置点击对话框外部不消失对话款
+        dialog.setCanceledOnTouchOutside(true);
+
+        // 设置对话框大小
+        viewDialg.setMinimumHeight(ScreenSizeUtils.getInstance(this).getScreenHeight());
+
+        Window dialogWindow = dialog.getWindow();
+
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+
+
+        // 对话框宽度
+        lp.width = (int) (ScreenSizeUtils.getInstance(this).getScreenWidth() * 0.85f);
+        // 对话框高度
+        lp.height = (int) (ScreenSizeUtils.getInstance(this).getScreenHeight() * 0.45f);
+        lp.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(lp);
+        // 设置对话框出现与消失动画
+        dialogWindow.setWindowAnimations(R.style.normalDialogAnim);
+        
+        // 打开图床
+        openPictureBedActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "打开图床", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "onClick: 打开图床");
+
+
+                openImageHosting(this);
+
+
+
+              //  dialog.dismiss();
+            }
+        });
+
+        // 确认插入网络图像
+        buttonOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "确认操作", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "onClick: 确认");
+
+                if (editTextPictureURL.getText().toString().trim().equals("")) {
+                    Toast.makeText(getApplicationContext(), "输入为空，请重新输入", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "onClick: 输入为空，请重新输入"
+                            + editTextPictureURL.getText());
+
+                }
+                // 简单的合法性校验
+                else if (!editTextPictureURL.getText().toString().substring(0, 4).equals("http")) {
+
+                    Log.d(TAG, "onClick: 非法URL" + editTextPictureURL.getText().toString());
+                } else {
+                    mEditor.insertImage(editTextPictureURL.getText().toString(), ""); //插入图片到编辑器
+                    Log.d(TAG, "onClick: editTextPictureURL.getText()" + editTextPictureURL.getText());
+                }
+
+                dialog.dismiss();
+
+            }
+        });
+
+        // 取消操作
+        buttonCancelOperation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "取消操作", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "onClick: 取消操作");
+                dialog.dismiss();
+            }
+        });
+
+
+        dialog.show();
 
     }
 
@@ -141,31 +285,6 @@ public class EditActivity extends AppCompatActivity {
 
     }
 
-    // 使用Glide加载手机相册中的图片
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode) {
-            case RC_CHOOSE_PHOTO:
-                if (data != null) {
-                    String realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this, data.getData());
-                    mEditor.insertImage("file://" + realPathFromUri, "");
-                    Log.d(TAG, "onActivityResult: image url=" + realPathFromUri);
-                } else {
-                    Toast.makeText(this, "图片损坏，请重新选择", Toast.LENGTH_SHORT).show();
-                }
-
-                break;
-
-            default:
-
-                Log.d(TAG, "onActivityResult: default");
-
-                break;
-
-        }
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -185,19 +304,6 @@ public class EditActivity extends AppCompatActivity {
 
     }
 
-
-    // 获取传递过来的数据
-    private void iniData() {
-        Intent intent = getIntent();
-        note = (Notes) intent.getSerializableExtra("note");
-        if (note != null) {
-            etTitle.setText(note.getTitle());
-            // 更改编辑器
-            // etContent.setText(note.getContents());
-            mEditor.setHtml(note.getContents());
-        }
-
-    }
 
     public void saveEditedNote(View view) {
         String title = etTitle.getText().toString();
@@ -229,4 +335,9 @@ public class EditActivity extends AppCompatActivity {
     }
 
 
+    public void openImageHosting(View.OnClickListener view) {
+        Intent intent = new Intent(this,ImageHostingActivity.class);
+        startActivity(intent);
+        Log.d(TAG, "openImageHosting: "+this+"打开 ImageHostingActivity");
+    }
 }
