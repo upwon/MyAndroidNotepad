@@ -5,6 +5,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,10 +25,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.example.myandroidnotes.HTTP.ClientUploadFileUtils;
 import com.huantansheng.easyphotos.EasyPhotos;
 import com.huantansheng.easyphotos.models.album.entity.Photo;
 import com.huantansheng.easyphotos.utils.permission.PermissionUtil;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
@@ -37,11 +43,18 @@ import okhttp3.ResponseBody;
  * @Date: 2021/9/26 20:09
  */
 
-public class ImageHostingActivity extends AppCompatActivity implements View.OnClickListener{
+public class ImageHostingActivity extends AppCompatActivity implements View.OnClickListener {
 
+    // 结果码的作用：用于标示返回结果的来源  此处为标记拍照
     public static final int TAKE_PHOTO = 1;
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE_SETTING = 1;
+    // 结果码的作用：用于标示返回结果的来源  此处为标记从相册选择图片
+    private static final int SELECTED_PHOTO = 101;
+
+
+    private String baseUrl = "https://www.img11.top/api/upload";
+
     /**
      * 选择的图片集
      */
@@ -58,7 +71,7 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
     TextView textView_info;
     EditText editTextText_PictureURLInfo;
     Button buttonCopyURL;
-    Button button_dailog;
+//    Button button_dailog;
 
 
     private Handler mHandler = new Handler(Looper.myLooper()) {
@@ -76,7 +89,6 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
     };
 
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +102,6 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
     }
 
 
-
     private void initView() {
         button_upload = findViewById(R.id.button_upload);
         button_open_picture = findViewById(R.id.button_open_picture);
@@ -102,8 +113,8 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
         buttonCopyURL = findViewById(R.id.buttonCopyURL);
         buttonCopyURL.setOnClickListener(this);
 
-        button_dailog = findViewById(R.id.button_dailog);
-        button_dailog.setOnClickListener(this);
+//        button_dailog = findViewById(R.id.button_dailog);
+//        button_dailog.setOnClickListener(this);
 
     }
 
@@ -111,8 +122,6 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
     private void preLoadAlbums() {
         EasyPhotos.preLoad(this);
     }
-
-
 
 
     @Override
@@ -136,6 +145,51 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            // 拍照回调
+            case TAKE_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        // 将拍摄的照片显示出来
+                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
+                        imageViewPicture.setImageBitmap(bitmap);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+
+            // 从相册选择图片回调
+            case SELECTED_PHOTO:
+                if (RESULT_OK == resultCode) {
+                    //相机或相册回调
+
+                    //返回对象集合：如果你需要了解图片的宽、高、大小、用户是否选中原图选项等信息，可以用这个
+                    ArrayList<Photo> resultPhotos =
+                            data.getParcelableArrayListExtra(EasyPhotos.RESULT_PHOTOS);
+
+                    //返回图片地址集合时如果你需要知道用户选择图片时是否选择了原图选项，用如下方法获取
+                    boolean selectedOriginal =
+                            data.getBooleanExtra(EasyPhotos.RESULT_SELECTED_ORIGINAL, false);
+
+
+                    selectedPhotoList.clear();
+                    selectedPhotoList.addAll(resultPhotos);
+                    //  adapter.notifyDataSetChanged();
+                    //  rvImage.smoothScrollToPosition(0);
+
+                    Glide.with(this).load(resultPhotos.get(0).uri).into(imageViewPicture);
+
+                }
+
+            default:
+                Log.d(TAG, "onActivityResult: switch case : default " + requestCode);
+                break;
+        }
+    }
 
     @Override
     public void onClick(View view) {
@@ -231,4 +285,14 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
                 break;
         }
     }
+
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
 }
