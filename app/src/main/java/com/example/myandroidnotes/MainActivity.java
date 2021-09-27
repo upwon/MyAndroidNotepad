@@ -51,13 +51,12 @@ public class MainActivity extends AppCompatActivity {
     public static final int MODE_GRID = 1;
 
 
+
     /**
-     * @param
-     * @return
-     * @method
-     * @description 初始化View->初始化数据->初始化事件
-     * @date: 2021/9/8 19:48
-     * @author: wangxianwen
+     * 初始化View->初始化数据->初始化事件
+     * @param savedInstanceState
+     * @author  wangxianwen
+     * @date 2021/9/8 19:48
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     /**
-     * @param
-     * @return
-     * @method
-     * @description 重写onResume 保证打开软件或新增笔记后 数据刷新
-     * @date: 2021/9/10 19:51
-     * @author: wangxianwen
+     * 重写onResume 保证打开软件或新增笔记后 数据刷新
+     * @date 2021/9/10 19:51
+     * @author wangxianwen
      */
     @Override
     protected void onResume() {
@@ -85,18 +82,16 @@ public class MainActivity extends AppCompatActivity {
         setListLayout();
     }
 
+
+
     /**
-     * @param
-     * @return
-     * @method refreshDataFromDb
-     * @description 从数据库中获取所有数据  并让Adapter去通知UI刷新示数据
-     * @date: 2021/9/10 20:05
-     * @author: wangxianwen
+     * 从数据库中获取所有数据  并让Adapter去通知UI刷新示数据
+     * @date  2021/9/27 19:44
+     * @author wangxianwen
      */
     private void refreshDataFromDb() {
         mNoteDbOpenHelper = new NoteDbOpenHelper(this);
         mNotes = mNoteDbOpenHelper.queryAllNotes();
-        //  Collections.reverse(mNotes);
         mAdapter.refreshDate(mNotes);
     }
 
@@ -137,8 +132,7 @@ public class MainActivity extends AppCompatActivity {
         mAdapter = new MyAdapter(this, mNotes);
         // 将mRecyclerView绑定到 Adapter上
         mRecyclerView.setAdapter(mAdapter);
-//        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
-//        mRecyclerView.setLayoutManager(linearLayoutManager);
+
         setListLayout();
 
     }
@@ -176,7 +170,6 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
-//        mRecyclerView.addItemDecoration();
         mAdapter.setViewType(MyAdapter.TYPE_LINEAR_LAYOUT);
         mAdapter.notifyDataSetChanged();
 
