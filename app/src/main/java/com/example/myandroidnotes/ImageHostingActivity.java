@@ -8,13 +8,18 @@ import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.text.Editable;
+import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -40,19 +45,18 @@ import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
 
- 
+
 /**
- *
+ * @author wangxianwen
+ * @version 1.0
  * @ProjectName:
- * @Package:        com.example.myandroidnotes
+ * @Package: com.example.myandroidnotes
  * @ClassName:
- * @Description:    java类作用描述
- * @author          wangxianwen
- * @CreateDate:     2021/9/27 19:14
- * @UpdateUser:     更新者
- * @UpdateDate:     2021/9/27 19:14
- * @UpdateRemark:   更新内容
- * @version         1.0
+ * @Description: java类作用描述
+ * @CreateDate: 2021/9/27 19:14
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2021/9/27 19:14
+ * @UpdateRemark: 更新内容
  */
 public class ImageHostingActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -88,6 +92,7 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
     Button button_open_picture;
     Button button_upload;
     TextView textView_info;
+    TextView textViewOpenPictureHostingWenSite;
     EditText editTextText_PictureURLInfo;
     Button buttonCopyURL;
 
@@ -145,6 +150,12 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
         buttonCopyURL = findViewById(R.id.buttonCopyURL);
         buttonCopyURL.setOnClickListener(this);
 
+        textViewOpenPictureHostingWenSite = findViewById(R.id.textViewOpenPictureHostingWenSite);
+        textViewOpenPictureHostingWenSite.setOnClickListener(this);
+        // 设置下划线 抗锯齿
+        textViewOpenPictureHostingWenSite.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+        textViewOpenPictureHostingWenSite.getPaint().setAntiAlias(true);
+
 
     }
 
@@ -183,11 +194,9 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
                                 // response.body().string() 只能调用一次
                                 // https://juejin.cn/post/6844903545628524551
                                 Log.d(TAG, "run:  ResponseBody result= " + responseBody.toString());
-                                // editTextText_PictureURLInfo.setText(result.string());
 
                                 Message message = new Message();
                                 message.what = 0;
-//                                message.obj=new String(result.string());
                                 message.obj = new String(responseBody.string());
                                 mHandler.sendMessage(message);
                             }
@@ -205,7 +214,7 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
 
                 break;
 
-            // // if the user selects copy
+            // 复制图床中图片的URL
             case R.id.buttonCopyURL:
                 //获取剪贴板管理器：
                 // Gets a handle to the clipboard service.
@@ -232,6 +241,15 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
                         }
                     }
                 });
+
+                break;
+
+            // 打开系统浏览器 跳转至图床网站
+            case R.id.textViewOpenPictureHostingWenSite:
+                String webSiteUrl = "https://www.img11.top/user/my_token";
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(webSiteUrl));
+                startActivity(intent);
 
                 break;
 
