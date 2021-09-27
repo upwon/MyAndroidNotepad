@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.example.myandroidnotes.HTTP.ClientUploadFileUtils;
 import com.example.myandroidnotes.util.SpfUtil;
@@ -40,8 +41,10 @@ import com.huantansheng.easyphotos.EasyPhotos;
 import com.huantansheng.easyphotos.models.album.entity.Photo;
 import com.huantansheng.easyphotos.utils.permission.PermissionUtil;
 
+
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 
@@ -71,12 +74,14 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
     private static final int SELECTED_PHOTO = 101;
     private static final String TAG = "ImageHostingActivity";
     private static final String KEY_PICTURE_HOSTING_TOKEN = "key_picture_hosting_token";
+    private final int MESSAGE_WHAT_CODE_FOR_POST_FILE = 0;
 
 
     /**
      * 图床请求URL
      */
     private String baseUrl = "https://www.img11.top/api/upload";
+    private String webSiteUrl = "https://www.img11.top/user/my_token";
 
     /**
      * 选择的图片集
@@ -101,11 +106,36 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            if (msg.what == 0) {
+
+            // 图片上传子线程的回调
+            if (msg.what == MESSAGE_WHAT_CODE_FOR_POST_FILE) {
                 String strData = (String) msg.obj;
-                editTextText_PictureURLInfo.setText(strData);
                 Log.d(TAG, "handleMessage: strData = " + strData);
-                Toast.makeText(ImageHostingActivity.this, "主线程收到来自网络的消息啦！", Toast.LENGTH_SHORT).show();
+
+
+                // fastjson 反序列化 获取url
+                String success = "success";
+                String url = "url";
+                Map<String, Object> objectMap = JSON.parseObject(strData, Map.class);
+                Log.d(TAG, "handleMessage: " + success + objectMap.get(success));
+                Log.d(TAG, "handleMessage: " + url + objectMap.get(url));
+
+                String resultUrl = (String) objectMap.get(url);
+
+                editTextText_PictureURLInfo.setText(resultUrl);
+
+
+                try {
+                    if ((Boolean) objectMap.get(success)) {
+                        ToastUtil.toastShort(ImageHostingActivity.this, "主线程收到来自网络的消息！\n 🙂 请复制url");
+                    } else {
+                        ToastUtil.toastShort(ImageHostingActivity.this, "主线程收到来自网络的消息！😑 但出现上传错误，请重试");
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
 
             }
         }
@@ -166,91 +196,26 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
         switch (view.getId()) {
             // 利用 EasyPhotos 选择图片
             case R.id.button_open_picture:
-                EasyPhotos.createAlbum(this, true, false, GlideEngine.getInstance())
-                        .setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
-                        .start(SELECTED_PHOTO);
+                selectAndOpenPicture();
                 break;
-            // 打开图床
+
+            // 开启子线程 上传图片
             case R.id.button_upload:
-                String url = this.baseUrl;
-                String token = "feb9e70f806f1198aa23c755775b46d6";
                 if (imageViewPicture.getDrawable() == null) {
-                    Log.d(TAG, "onClick: imageViewPicture未显示图片");
+                    Log.d(TAG, "onClick: imageViewPicture 未打开图片");
                     break;
                 }
-
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        ResponseBody responseBody = null;
-                        try {
-                            if (selectedPhotoList.size() < 1) {
-                                Log.d(TAG, "run: selectedPhotoList.size = " + selectedPhotoList.size());
-
-                            } else {
-                                responseBody = ClientUploadFileUtils.upload(url, token, selectedPhotoList.get(0).path, selectedPhotoList.get(0).name);
-                                Log.d(TAG, "run: 图片uri = " + selectedPhotoList.get(0).uri);
-
-                                // response.body().string() 只能调用一次
-                                // https://juejin.cn/post/6844903545628524551
-                                Log.d(TAG, "run:  ResponseBody result= " + responseBody.toString());
-
-                                Message message = new Message();
-                                message.what = 0;
-                                message.obj = new String(responseBody.string());
-                                mHandler.sendMessage(message);
-                            }
-
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                };
-
-                new Thread(runnable).start();
-                Toast.makeText(this, "开启子线程请求网络！", Toast.LENGTH_SHORT).show();
-
+                uploadPicture();
                 break;
 
             // 复制图床中图片的URL
             case R.id.buttonCopyURL:
-                //获取剪贴板管理器：
-                // Gets a handle to the clipboard service.
-                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-
-                // 创建普通字符型ClipData
-                ClipData clip = ClipData.newPlainText("pictureURL", editTextText_PictureURLInfo.getText());
-
-                Log.d(TAG, "onClick: 准备复制到剪切板 clip = " + clip);
-
-                // 将ClipData内容放到系统剪贴板里。
-                // Set the clipboard's primary clip.
-                clipboardManager.setPrimaryClip(clip);
-
-                clipboardManager.addPrimaryClipChangedListener(new ClipboardManager.OnPrimaryClipChangedListener() {
-                    @Override
-                    public void onPrimaryClipChanged() {
-                        // 剪贴板中的数据被改变，此方法将被回调
-                        Log.d(TAG, "onPrimaryClipChanged: 剪切板数据改变");
-
-                        if (clipboardManager.hasPrimaryClip()) {
-                            // 打印剪切板中的第一条数据
-                            Log.d(TAG, "onPrimaryClipChanged: " + clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
-                        }
-                    }
-                });
-
+                copyUrl2ClipBoard();
                 break;
 
             // 打开系统浏览器 跳转至图床网站
             case R.id.textViewOpenPictureHostingWenSite:
-                String webSiteUrl = "https://www.img11.top/user/my_token";
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(webSiteUrl));
-                startActivity(intent);
-
+                startBrowserForRegistration();
                 break;
 
             default:
@@ -258,6 +223,97 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
                 Log.d(TAG, "onRequestPermissionsResult: 默认");
                 break;
         }
+    }
+
+    /**
+     * 打开系统浏览器 跳转至图床网站
+     */
+    private void startBrowserForRegistration() {
+        String webSiteUrl = this.webSiteUrl;
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(webSiteUrl));
+        startActivity(intent);
+    }
+
+    /**
+     * 利用 EasyPhotos 选择单张图片
+     */
+    private void selectAndOpenPicture() {
+        EasyPhotos.createAlbum(this, true, false, GlideEngine.getInstance())
+                .setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
+                .start(SELECTED_PHOTO);
+    }
+
+    /**
+     * 复制 url 至剪切板
+     */
+    private void copyUrl2ClipBoard() {
+        //获取剪贴板管理器：
+        // Gets a handle to the clipboard service.
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+
+        // 创建普通字符型ClipData
+        ClipData clip = ClipData.newPlainText("pictureURL", editTextText_PictureURLInfo.getText());
+
+        Log.d(TAG, "onClick: 准备复制到剪切板 clip = " + clip);
+
+        // 将ClipData内容放到系统剪贴板里。
+        // Set the clipboard's primary clip.
+        clipboardManager.setPrimaryClip(clip);
+
+        clipboardManager.addPrimaryClipChangedListener(new ClipboardManager.OnPrimaryClipChangedListener() {
+            @Override
+            public void onPrimaryClipChanged() {
+                // 剪贴板中的数据被改变，此方法将被回调
+                Log.d(TAG, "onPrimaryClipChanged: 剪切板数据改变");
+
+                if (clipboardManager.hasPrimaryClip()) {
+                    // 打印剪切板中的第一条数据
+                    Log.d(TAG, "onPrimaryClipChanged: " + clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
+                }
+            }
+        });
+    }
+
+    /**
+     * 开启子线程通过post方法上传图片文件
+     */
+    private void uploadPicture() {
+        String url = this.baseUrl;
+        String token = editTextTextToken.getText().toString();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                ResponseBody responseBody = null;
+                try {
+                    if (selectedPhotoList.size() < 1) {
+                        Log.d(TAG, "run: selectedPhotoList.size = " + selectedPhotoList.size());
+
+                    } else {
+                        responseBody = ClientUploadFileUtils.upload(url, token, selectedPhotoList.get(0).path, selectedPhotoList.get(0).name);
+                        Log.d(TAG, "run: 图片uri = " + selectedPhotoList.get(0).uri);
+
+                        // response.body().string() 只能调用一次
+                        // https://juejin.cn/post/6844903545628524551
+                        Log.d(TAG, "run:  ResponseBody result= " + responseBody.toString());
+
+                        Message message = new Message();
+                        message.what = MESSAGE_WHAT_CODE_FOR_POST_FILE;
+                        message.obj = new String(responseBody.string());
+                        mHandler.sendMessage(message);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        };
+
+        new Thread(runnable).start();
+        Toast.makeText(this, "开启子线程请求网络！", Toast.LENGTH_SHORT).show();
     }
 
 
