@@ -294,12 +294,13 @@ public class AddActivity extends AppCompatActivity {
 
     }
 
-    // 使用Glide加载手机相册中的图片
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
+
+            // 使用Glide加载手机相册中的图片
             case RC_CHOOSE_PHOTO:
                 if (data != null) {
                     String realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this, data.getData());
