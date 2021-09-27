@@ -30,10 +30,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author 12447
+ */
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
-    // 记录布局为列表视图还是网格布局
+    /**
+     * 记录布局为列表视图还是网格布局
+     */
     private int currentListLayoutMode = MODE_LINEAR;
     private RecyclerView mRecyclerView;
     private ItemTouchHelper itemTouchHelper;
@@ -128,9 +133,10 @@ public class MainActivity extends AppCompatActivity {
      * @author: wangxianwen
      */
     private void initEvents() {
-        mAdapter = new MyAdapter(this, mNotes);     // 构造 Adapter 对象
-
-        mRecyclerView.setAdapter(mAdapter);     // 将mRecyclerView绑定到 Adapter上
+        // 构造 Adapter 对象
+        mAdapter = new MyAdapter(this, mNotes);
+        // 将mRecyclerView绑定到 Adapter上
+        mRecyclerView.setAdapter(mAdapter);
 //        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
 //        mRecyclerView.setLayoutManager(linearLayoutManager);
         setListLayout();
@@ -270,15 +276,21 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         item.setChecked(true);
         switch (item.getItemId()) {
-            case R.id.menu_linear:  // 列表视图
+            // 列表视图
+            case R.id.menu_linear:
                 setToLinearList();
-                currentListLayoutMode = MODE_LINEAR;  // 设为列表布局 之后会持久化保存布局模式
-                SpfUtil.saveInt(this, KEY_LAYOUT_MODE, currentListLayoutMode);    // 持久化到SharedPreferences
+                // 设为列表布局 之后会持久化保存布局模式
+                currentListLayoutMode = MODE_LINEAR;
+                // 持久化到SharedPreferences
+                SpfUtil.saveInt(this, KEY_LAYOUT_MODE, currentListLayoutMode);
                 return true;
-            case R.id.menu_grid:    // 网格视图
+            // 网格视图
+            case R.id.menu_grid:
                 setToGridList();
-                currentListLayoutMode = MODE_GRID;  // 设为列表布局 之后会持久化保存布局模式
-                SpfUtil.saveInt(this, KEY_LAYOUT_MODE, currentListLayoutMode);    // 持久化到SharedPreferences
+                // 设为列表布局 之后会持久化保存布局模式
+                currentListLayoutMode = MODE_GRID;
+                // 持久化到SharedPreferences
+                SpfUtil.saveInt(this, KEY_LAYOUT_MODE, currentListLayoutMode);
                 return true;
 
             default:
