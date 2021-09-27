@@ -8,25 +8,30 @@ import java.io.IOException;
 
 import okhttp3.*;
 
-/**
- * @ClassName: ClientUploadFileUtils
- * @Description: 上传图片
- * @Author: wangxianwen
- * @Date: 2021/9/17 23:58
- */
 
+
+/**
+ * 图像文件上传至图床
+ * @author wangxianwen
+ * @date 2021/9/17 23:58
+ */
 public class ClientUploadFileUtils {
 
     private static final String TAG = "ClientUploadFileUtils";
+    /**
+     * token 长度
+     */
+    private static int TokenLength = 32;
 
     /**
      * 上传图像文件至 图床
-     * @param url URL
-     * @param token 图床中账号的token
+     *
+     * @param url      URL
+     * @param token    图床中账号的token
      * @param filePath 文件路径
-     * @param fileName  文件名称
+     * @param fileName 文件名称
      * @return okhttp 的 响应报文body
-     * @throws Exception
+     *
      */
     public static ResponseBody upload(String url, String token, String filePath, String fileName) throws Exception {
         OkHttpClient client = new OkHttpClient();
@@ -55,6 +60,21 @@ public class ClientUploadFileUtils {
         return response.body();
 
 
+    }
+
+    /**
+     * 校验 token 长度是否合法
+     * @param token 待验证token
+     * @return 合法则返回 true
+     */
+    public static boolean isValidToken(String token) {
+
+        if(token.length()==TokenLength){
+
+            return true;
+        }
+
+        return false;
     }
 
 
