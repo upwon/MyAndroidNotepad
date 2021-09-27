@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +29,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.myandroidnotes.HTTP.ClientUploadFileUtils;
+import com.example.myandroidnotes.util.SpfUtil;
+import com.example.myandroidnotes.util.ToastUtil;
 import com.huantansheng.easyphotos.EasyPhotos;
 import com.huantansheng.easyphotos.models.album.entity.Photo;
 import com.huantansheng.easyphotos.utils.permission.PermissionUtil;
@@ -36,23 +40,38 @@ import java.util.ArrayList;
 
 import okhttp3.ResponseBody;
 
+ 
 /**
- * @ClassName: ImageHostingActivity
- * @Description: java类作用描述
- * @Author: wangxianwen
- * @Date: 2021/9/26 20:09
+ *
+ * @ProjectName:
+ * @Package:        com.example.myandroidnotes
+ * @ClassName:
+ * @Description:    java类作用描述
+ * @author          wangxianwen
+ * @CreateDate:     2021/9/27 19:14
+ * @UpdateUser:     更新者
+ * @UpdateDate:     2021/9/27 19:14
+ * @UpdateRemark:   更新内容
+ * @version         1.0
  */
-
 public class ImageHostingActivity extends AppCompatActivity implements View.OnClickListener {
 
-    // 结果码的作用：用于标示返回结果的来源  此处为标记拍照
+    /**
+     * 结果码的作用：用于标示返回结果的来源  此处为标记拍照
+     **/
     public static final int TAKE_PHOTO = 1;
-    private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE_SETTING = 1;
-    // 结果码的作用：用于标示返回结果的来源  此处为标记从相册选择图片
+    /**
+     * 结果码的作用：用于标示返回结果的来源  此处为标记从相册选择图片
+     */
     private static final int SELECTED_PHOTO = 101;
+    private static final String TAG = "ImageHostingActivity";
+    private static final String KEY_PICTURE_HOSTING_TOKEN = "key_picture_hosting_token";
 
 
+    /**
+     * 图床请求URL
+     */
     private String baseUrl = "https://www.img11.top/api/upload";
 
     /**
@@ -71,7 +90,6 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
     TextView textView_info;
     EditText editTextText_PictureURLInfo;
     Button buttonCopyURL;
-//    Button button_dailog;
 
 
     private Handler mHandler = new Handler(Looper.myLooper()) {
@@ -95,10 +113,20 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.layout_image_hosting);
 
         initView();
+
+        // 初始化界面中的相关设置 比如： token
+        initViewParameters();
         if (PermissionUtil.checkAndRequestPermissionsInActivity(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
             preLoadAlbums();
         }
+    }
+
+    private void initViewParameters() {
+        String token = SpfUtil.getString(ImageHostingActivity.this, KEY_PICTURE_HOSTING_TOKEN);
+        Log.d(TAG, "initViewParameters: 加载到参数 token = " + token);
+        editTextTextToken.setText(token);
+        Log.d(TAG, "initViewParameters: editTextTextToken = " + editTextTextToken.getText());
     }
 
 
@@ -106,6 +134,10 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
         button_upload = findViewById(R.id.button_upload);
         button_open_picture = findViewById(R.id.button_open_picture);
         editTextText_PictureURLInfo = findViewById(R.id.editTextText_PictureURLInfo);
+
+        editTextTextToken = findViewById(R.id.editTextTextToken);
+        editTextTextToken.addTextChangedListener(new MyEditTextWatcher());
+
         imageViewPicture = findViewById(R.id.imageViewPicture);
         button_open_picture.setOnClickListener(this);
         button_upload.setOnClickListener(this);
@@ -113,12 +145,107 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
         buttonCopyURL = findViewById(R.id.buttonCopyURL);
         buttonCopyURL.setOnClickListener(this);
 
-//        button_dailog = findViewById(R.id.button_dailog);
-//        button_dailog.setOnClickListener(this);
 
     }
 
 
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+            // 利用 EasyPhotos 选择图片
+            case R.id.button_open_picture:
+                EasyPhotos.createAlbum(this, true, false, GlideEngine.getInstance())
+                        .setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
+                        .start(SELECTED_PHOTO);
+                break;
+            // 打开图床
+            case R.id.button_upload:
+                String url = this.baseUrl;
+                String token = "feb9e70f806f1198aa23c755775b46d6";
+                if (imageViewPicture.getDrawable() == null) {
+                    Log.d(TAG, "onClick: imageViewPicture未显示图片");
+                    break;
+                }
+
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        ResponseBody responseBody = null;
+                        try {
+                            if (selectedPhotoList.size() < 1) {
+                                Log.d(TAG, "run: selectedPhotoList.size = " + selectedPhotoList.size());
+
+                            } else {
+                                responseBody = ClientUploadFileUtils.upload(url, token, selectedPhotoList.get(0).path, selectedPhotoList.get(0).name);
+                                Log.d(TAG, "run: 图片uri = " + selectedPhotoList.get(0).uri);
+
+                                // response.body().string() 只能调用一次
+                                // https://juejin.cn/post/6844903545628524551
+                                Log.d(TAG, "run:  ResponseBody result= " + responseBody.toString());
+                                // editTextText_PictureURLInfo.setText(result.string());
+
+                                Message message = new Message();
+                                message.what = 0;
+//                                message.obj=new String(result.string());
+                                message.obj = new String(responseBody.string());
+                                mHandler.sendMessage(message);
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                };
+
+                new Thread(runnable).start();
+                Toast.makeText(this, "开启子线程请求网络！", Toast.LENGTH_SHORT).show();
+
+                break;
+
+            // // if the user selects copy
+            case R.id.buttonCopyURL:
+                //获取剪贴板管理器：
+                // Gets a handle to the clipboard service.
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+
+                // 创建普通字符型ClipData
+                ClipData clip = ClipData.newPlainText("pictureURL", editTextText_PictureURLInfo.getText());
+
+                Log.d(TAG, "onClick: 准备复制到剪切板 clip = " + clip);
+
+                // 将ClipData内容放到系统剪贴板里。
+                // Set the clipboard's primary clip.
+                clipboardManager.setPrimaryClip(clip);
+
+                clipboardManager.addPrimaryClipChangedListener(new ClipboardManager.OnPrimaryClipChangedListener() {
+                    @Override
+                    public void onPrimaryClipChanged() {
+                        // 剪贴板中的数据被改变，此方法将被回调
+                        Log.d(TAG, "onPrimaryClipChanged: 剪切板数据改变");
+
+                        if (clipboardManager.hasPrimaryClip()) {
+                            // 打印剪切板中的第一条数据
+                            Log.d(TAG, "onPrimaryClipChanged: " + clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
+                        }
+                    }
+                });
+
+                break;
+
+            default:
+
+                Log.d(TAG, "onRequestPermissionsResult: 默认");
+                break;
+        }
+    }
+
+
+    /**
+     * 预加载图像  似乎效果不明显 第一次加载速度较慢
+     */
     private void preLoadAlbums() {
         EasyPhotos.preLoad(this);
     }
@@ -174,12 +301,10 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
                     //返回图片地址集合时如果你需要知道用户选择图片时是否选择了原图选项，用如下方法获取
                     boolean selectedOriginal =
                             data.getBooleanExtra(EasyPhotos.RESULT_SELECTED_ORIGINAL, false);
-
+                    Log.d(TAG, "onActivityResult: 是否选择原图 = " + selectedOriginal);
 
                     selectedPhotoList.clear();
                     selectedPhotoList.addAll(resultPhotos);
-                    //  adapter.notifyDataSetChanged();
-                    //  rvImage.smoothScrollToPosition(0);
 
                     Glide.with(this).load(resultPhotos.get(0).uri).into(imageViewPicture);
 
@@ -187,101 +312,6 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
 
             default:
                 Log.d(TAG, "onActivityResult: switch case : default " + requestCode);
-                break;
-        }
-    }
-
-    @Override
-    public void onClick(View view) {
-
-
-        switch (view.getId()) {
-            case R.id.button_open_picture:
-
-                EasyPhotos.createAlbum(this, true, false, GlideEngine.getInstance())
-                        .setFileProviderAuthority("com.huantansheng.easyphotos.demo.fileprovider")
-                        .start(101);//也可以选择链式调用写法
-                break;
-            case R.id.button_upload:
-
-                String url = "https://www.img11.top/api/upload";
-                String token = "feb9e70f806f1198aa23c755775b46d6";
-
-                if (imageViewPicture.getDrawable() == null) {
-                    Log.d(TAG, "onClick: imageViewPicture未显示图片");
-                    break;
-                }
-
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        ResponseBody result = null;
-                        try {
-                            if (selectedPhotoList.size() < 1) {
-                                Log.d(TAG, "run: selectedPhotoList.size = " + selectedPhotoList.size());
-
-                            } else {
-                                result = ClientUploadFileUtils.upload(url, token, selectedPhotoList.get(0).path, selectedPhotoList.get(0).name);
-                                Log.d(TAG, "run: 图片uri = " + selectedPhotoList.get(0).uri);
-
-                                // response.body().string() 只能调用一次
-                                // https://juejin.cn/post/6844903545628524551
-                                Log.d(TAG, "run:  ResponseBody result= " + result.toString());
-                                // editTextText_PictureURLInfo.setText(result.string());
-
-                                Message message = new Message();
-                                message.what = 0;
-//                                message.obj=new String(result.string());
-                                message.obj = new String(result.string());
-                                mHandler.sendMessage(message);
-                            }
-
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                };
-
-                new Thread(runnable).start();
-                Toast.makeText(this, "开启子线程请求网络！", Toast.LENGTH_SHORT).show();
-
-                break;
-
-            // // if the user selects copy
-            case R.id.buttonCopyURL:
-                //获取剪贴板管理器：
-                // Gets a handle to the clipboard service.
-                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-
-                // 创建普通字符型ClipData
-                ClipData clip = ClipData.newPlainText("pictureURL", editTextText_PictureURLInfo.getText());
-
-                Log.d(TAG, "onClick: 准备复制到剪切板 clip = " + clip);
-
-                // 将ClipData内容放到系统剪贴板里。
-                // Set the clipboard's primary clip.
-                clipboardManager.setPrimaryClip(clip);
-
-                clipboardManager.addPrimaryClipChangedListener(new ClipboardManager.OnPrimaryClipChangedListener() {
-                    @Override
-                    public void onPrimaryClipChanged() {
-                        // 剪贴板中的数据被改变，此方法将被回调
-                        Log.d(TAG, "onPrimaryClipChanged: 剪切板数据改变");
-
-                        if (clipboardManager.hasPrimaryClip()) {
-                            // 打印剪切板中的第一条数据
-                            Log.d(TAG, "onPrimaryClipChanged: " + clipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
-                        }
-                    }
-                });
-
-                break;
-
-            default:
-
-                Log.d(TAG, "onRequestPermissionsResult: 默认");
                 break;
         }
     }
@@ -295,4 +325,40 @@ public class ImageHostingActivity extends AppCompatActivity implements View.OnCl
         this.baseUrl = baseUrl;
     }
 
+    private class MyEditTextWatcher implements TextWatcher {
+
+        // 内容变化前
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        // 内容变化中
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        // 内容变化后
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+            Log.d(TAG, "afterTextChanged: " + editable.toString());
+
+            ToastUtil.toastShort(ImageHostingActivity.this, editable.toString());
+
+            String token = editable.toString();
+
+
+            if (ClientUploadFileUtils.isValidToken(token)) {
+
+                // 将用户设置的 token 持久化到 SharedPreferences
+                SpfUtil.saveString(ImageHostingActivity.this, KEY_PICTURE_HOSTING_TOKEN, token);
+                Log.d(TAG, "afterTextChanged: token length =" + token.length() + " token = " + token);
+
+            }
+
+
+        }
+    }
 }
