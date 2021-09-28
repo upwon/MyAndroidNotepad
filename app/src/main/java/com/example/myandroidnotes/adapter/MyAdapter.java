@@ -55,6 +55,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     public void setViewType(int viewType) {
         this.viewType = viewType;
     }
+
     public int getViewType() {
         return this.viewType;
     }
@@ -237,8 +238,13 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
      */
     private void bindGridViewHolder(MyGridViewHolder holder, int position) {
         Notes note = mList.get(position);
+
+        // 从HTML中解析笔记内容
+        String parsedNoteContent = TextParse.parsePlainTextFromHTML(note.getContents());
+
+
         holder.mTvTitle.setText(note.getTitle());
-        holder.mTvContent.setText(note.getContents());
+        holder.mTvContent.setText(parsedNoteContent);
         holder.mTvTime.setText(note.getTime());
         holder.rlContainer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -297,7 +303,6 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     public int getItemCount() {
         return mList.size();
     }
-
 
 
     /**
