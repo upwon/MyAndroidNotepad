@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author 12447
+ * @author wangxianwen
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -51,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
     public static final int MODE_GRID = 1;
 
 
-
     /**
      * 初始化View->初始化数据->初始化事件
+     *
      * @param savedInstanceState
-     * @author  wangxianwen
+     * @author wangxianwen
      * @date 2021/9/8 19:48
      */
     @Override
@@ -67,11 +67,15 @@ public class MainActivity extends AppCompatActivity {
         initData();
         initEvents();
 
+
+
+
     }
 
 
     /**
      * 重写onResume 保证打开软件或新增笔记后 数据刷新
+     *
      * @date 2021/9/10 19:51
      * @author wangxianwen
      */
@@ -83,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 从数据库中获取所有数据  并让Adapter去通知UI刷新示数据
-     * @date  2021/9/27 19:44
+     *
+     * @date 2021/9/27 19:44
      * @author wangxianwen
      */
     private void refreshDataFromDb() {
@@ -133,8 +137,20 @@ public class MainActivity extends AppCompatActivity {
         // 将mRecyclerView绑定到 Adapter上
         mRecyclerView.setAdapter(mAdapter);
 
-        setListLayout();
+      //  setListLayout();
 
+        initMoveAndSwipedEvents();
+
+
+    }
+
+    /**
+     * ItemTouchHelper实现拖拽和侧滑删除
+     */
+    private void initMoveAndSwipedEvents() {
+        ItemTouchHelperCallback itemTouchHelperCallback = new ItemTouchHelperCallback(mAdapter);
+        itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     /**
@@ -150,8 +166,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "setListLayout: " + currentListLayoutMode);
         if (currentListLayoutMode == MODE_LINEAR) {
             setToLinearList();
+            Log.d(TAG, "setListLayout: setToLinearList");
         } else {
             setToGridList();
+            Log.d(TAG, "setListLayout: setToGridList");
 
         }
     }
@@ -173,10 +191,10 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setViewType(MyAdapter.TYPE_LINEAR_LAYOUT);
         mAdapter.notifyDataSetChanged();
 
-
-        ItemTouchHelperCallback itemTouchHelperCallback = new ItemTouchHelperCallback(mAdapter);
+        /**设置拖动和滑动的回调*/
+     /*   ItemTouchHelperCallback itemTouchHelperCallback = new ItemTouchHelperCallback(mAdapter);
         itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);*/
 
     }
 
@@ -189,17 +207,18 @@ public class MainActivity extends AppCompatActivity {
      * @date: 2021/9/10 20:10
      * @author: wangxianwen
      */
-    @SuppressLint("NotifyDataSetChanged")
+    // @SuppressLint("NotifyDataSetChanged")
     private void setToGridList() {
+
 
         RecyclerView.LayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         mRecyclerView.setLayoutManager(gridLayoutManager);
         mAdapter.setViewType(MyAdapter.TYPE_GRID_LAYOUT);
         mAdapter.notifyDataSetChanged();
 
-        ItemTouchHelperCallback itemTouchHelperCallback = new ItemTouchHelperCallback(mAdapter);
+      /*  ItemTouchHelperCallback itemTouchHelperCallback = new ItemTouchHelperCallback(mAdapter);
         itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);*/
 
     }
 

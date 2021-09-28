@@ -55,8 +55,17 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     public void setViewType(int viewType) {
         this.viewType = viewType;
     }
+    public int getViewType() {
+        return this.viewType;
+    }
 
-
+    /**
+     * 交换位置
+     *
+     * @param fromPosition 开始移动的 item position
+     * @param toPosition   移动到 item position 位置
+     * @return
+     */
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
         // 交换列表中指定位置的数据
@@ -65,26 +74,14 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         mList.add(toPosition, fromNote);
         notifyItemMoved(fromPosition, toPosition);
 
-//        Collections.swap(mList, fromPosition, toPosition);
-//        notifyItemMoved(fromPosition, toPosition);
-
-
-//        notifyItemRangeChanged(Math.min(fromPosition, toPosition), Math.abs(fromPosition - toPosition) +1);
-
-       /* if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(mList, i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(mList, i, i - 1);
-            }
-        }
-        notifyItemMoved(fromPosition, toPosition);*/
-
         return true;
     }
 
+    /**
+     * 移除数据
+     *
+     * @param position The position of the item dismissed.
+     */
     @Override
     public void onItemDismiss(int position) {
         // 移除
@@ -95,8 +92,9 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder  onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
+        Log.d(TAG, "onCreateViewHolder: viewType = " + viewType);
         if (viewType == TYPE_LINEAR_LAYOUT) {
             View view = mLayoutInflater.inflate(R.layout.list_item_layout, parent, false);
             MyViewHolder myViewHolder = new MyViewHolder(view);
@@ -119,7 +117,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         if (holder == null) {
             return;
         }
-        Log.d(TAG, "onBindViewHolder: holder = "+holder);
+        Log.d(TAG, "onBindViewHolder: holder = " + holder);
         if (holder instanceof MyViewHolder) {
             Log.d(TAG, "onBindViewHolder: holder instanceof MyViewHolder");
             bindMyViewHolder((MyViewHolder) holder, position);
@@ -231,14 +229,12 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     }
 
 
-
-
     /**
      * 绑定网格布局 ViewHolder
+     *
      * @param holder
      * @param position
      */
-
     private void bindGridViewHolder(MyGridViewHolder holder, int position) {
         Notes note = mList.get(position);
         holder.mTvTitle.setText(note.getTitle());
@@ -302,9 +298,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
         return mList.size();
     }
 
-    public int getViewType() {
-        return viewType;
-    }
+
 
     /**
      * @param
@@ -335,8 +329,6 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
     }
 
 
-
-
     public class MyViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 
         TextView mTvTitle;
@@ -351,23 +343,6 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
             this.mTvContent = itemView.findViewById(R.id.tv_content);
             this.mTvTime = itemView.findViewById(R.id.tv_time);
             this.rlContainer = itemView.findViewById(R.id.rl_item_container);
-
-
-            // ----------------------------------------
-
-
-
-
-            // ----------------------------------------
-
-
-
-
-
-
-
-
-
 
 
         }
@@ -385,7 +360,7 @@ public class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> imp
 
     }
 
-    public class MyGridViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder{
+    public class MyGridViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
         TextView mTvTitle;
         TextView mTvContent;
         TextView mTvTime;

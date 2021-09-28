@@ -18,17 +18,22 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.example.myandroidnotes.adapter.MyAdapter;
 
 /**
+ * 使用 ItemTouchHelper 需要一个 Callback，
+ * 该 Callback 是 ItemTouchHelper.Callback 的子类，
+ * 所以我们需要新建一个类比如 ItemTouchHelperCallback
+ * 继承自 ItemTouchHelper.Callback。
+ * 可以重写其数个方法来满足需求。
+ *
  * @ClassName: ItemTouchHelperCallback
  * @Description: java类作用描述
  * @Author: wangxianwen
  * @Date: 2021/9/14 22:02
  */
-
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     private static final String TAG = "ItemTouchHelperCallback";
     private static final float ALPHA_FULL = 1.0f;
-    private  ItemTouchHelperAdapter mAdapter;
+    private ItemTouchHelperAdapter mAdapter;
 
 
     public ItemTouchHelperCallback(ItemTouchHelperAdapter adapter) {
@@ -110,12 +115,12 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     /**
      * 从旧位置滑动到新位置
      *
-     * @param
-     * @return
-     * @description 描述一下方法的作用
-     * @method
-     * @date: 2021/9/14 23:14
-     * @author: wangxianwen
+     * @param recyclerView
+     * @param viewHolder
+     * @param target
+     * @return 布尔值
+     * @date 2021/9/14 23:14
+     * @author wangxianwen
      */
     @Override
     public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -125,8 +130,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
                     + "target.getItemViewType() = " + target.getItemViewType());
             return false;
         }
-        Log.d(TAG, "onMove: target.getItemViewType() = "+target.getItemViewType() );
-        Log.d(TAG, "onMove: viewHolder.getAdapterPosition()= "+viewHolder.getAdapterPosition()+"  target.getAdapterPosition() = "+ target.getAdapterPosition());
+        Log.d(TAG, "onMove: target.getItemViewType() = " + target.getItemViewType());
+        Log.d(TAG, "onMove: viewHolder.getAdapterPosition()= " + viewHolder.getAdapterPosition() + "  target.getAdapterPosition() = " + target.getAdapterPosition());
         // 正常情况则通知 adapter 有移动事件发生
         mAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
         return true;
@@ -178,10 +183,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
 
-        // 长按时改变选中条目的背景色
-//        if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-//            viewHolder.itemView.setBackgroundColor(Color.LTGRAY);
-//        }
+
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
             Log.d(TAG, "onSelectedChanged: actionState != ItemTouchHelper.ACTION_STATE_IDLE , actionState = " + actionState);
 
@@ -190,8 +192,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
                 ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
                 // 选中状态回调
                 itemViewHolder.onItemSelected();
-            }
-            else{
+            } else {
                 Log.d(TAG, "onSelectedChanged: viewHolder 不是 instanceof ItemTouchHelperViewHolder");
                 Log.d(TAG, "onSelectedChanged: viewHolder= " + viewHolder.getClass());
 
@@ -214,7 +215,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
 
-        // 清楚背景颜色设置
+        // 清除背景颜色设置
         viewHolder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
         viewHolder.itemView.setAlpha(ALPHA_FULL);
@@ -224,13 +225,10 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
             ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
             // 未选中状态回调
             itemViewHolder.onItemClear();
-        }
-        else{
+        } else {
             Log.d(TAG, "clearView: 此处不是 ItemTouchHelperViewHolder");
 
         }
-
-
 
 
     }
